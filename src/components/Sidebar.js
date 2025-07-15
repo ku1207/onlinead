@@ -11,7 +11,7 @@ const Sidebar = ({ user, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', name: '대시보드', path: '/dashboard' },
     { id: 'daily-data', name: '일자별 데이터', path: '/daily-data' },
-    { id: 'keyword-data', name: '키워드별 데이터', path: '/keyword-data' },
+    { id: 'keyword-data', name: '매체 합산 데이터', path: '/keyword-data' },
     { id: 'media-data', name: '매체별 데이터', path: '/media-data' }
   ];
 

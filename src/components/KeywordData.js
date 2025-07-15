@@ -307,6 +307,84 @@ const KeywordData = () => {
     return [...baseColumns, ...additionalColumns];
   };
 
+  // 구조화된 컬럼 정보 반환
+  const getStructuredColumns = () => {
+    const columns = [];
+    
+    // 기본 컬럼들
+    columns.push({ 
+      category: '기본', 
+      name: '매체', 
+      colspan: 1, 
+      rowspan: 2, 
+      color: '#f8f9fa' 
+    });
+    columns.push({ 
+      category: '기본', 
+      name: '키워드(소재)', 
+      colspan: 1, 
+      rowspan: 2, 
+      color: '#f8f9fa' 
+    });
+    
+    // 각 카테고리별 컬럼들
+    const periodColumns = ['당일', '전일', '최근 7일', '이전 7일', '당월', '전월'];
+    
+    if (displayColumns.광고비) {
+      columns.push({ 
+        category: '광고비', 
+        name: '광고비', 
+        colspan: 6, 
+        rowspan: 1, 
+        color: '#e3f2fd', 
+        subColumns: periodColumns 
+      });
+    }
+    if (displayColumns.CPC) {
+      columns.push({ 
+        category: 'CPC', 
+        name: 'CPC', 
+        colspan: 6, 
+        rowspan: 1, 
+        color: '#f3e5f5', 
+        subColumns: periodColumns 
+      });
+    }
+    if (displayColumns.전환수) {
+      columns.push({ 
+        category: '전환수', 
+        name: '전환수', 
+        colspan: 6, 
+        rowspan: 1, 
+        color: '#e8f5e8', 
+        subColumns: periodColumns 
+      });
+    }
+    if (displayColumns.CPA) {
+      columns.push({ 
+        category: 'CPA', 
+        name: 'CPA', 
+        colspan: 6, 
+        rowspan: 1, 
+        color: '#fff3e0', 
+        subColumns: periodColumns 
+      });
+    }
+    if (displayColumns.기타) {
+      const otherColumns = ['CVR', '캠페인', '광고그룹', '노출수', '클릭수', 'CTR'];
+      columns.push({ 
+        category: '기타', 
+        name: '기타', 
+        colspan: 6, 
+        rowspan: 1, 
+        color: '#fce4ec', 
+        subColumns: otherColumns 
+      });
+    }
+    
+    return columns;
+  };
+
 
 
   // 스크롤바 스타일 컴포넌트
@@ -531,7 +609,7 @@ const KeywordData = () => {
       <ScrollbarStyle />
       
       <div className="content-header" style={{ marginBottom: '30px' }}>
-        <h1>키워드별 데이터</h1>
+        <h1>매체 합산 데이터</h1>
       </div>
 
       {/* 필터 영역 */}
@@ -667,15 +745,15 @@ const KeywordData = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8f9fa' }}>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>기간</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>광고비</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>CPC</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>전환수</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>CPA</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>CVR</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>노출수</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>클릭수</th>
-                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>CTR</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: '85px' }}>기간</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>광고비</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>CPC</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>전환수</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>CPA</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>CVR</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>노출수</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>클릭수</th>
+                      <th style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold', width: 'calc((100% - 85px) / 8)' }}>CTR</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -684,11 +762,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>전일</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdaySpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.yesterdayCPA > 0 ? formatNumber(summaryData.yesterdayCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.yesterdayCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.yesterdayClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.yesterdayCTR}%</td>
                     </tr>
                     
@@ -697,11 +775,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>당일</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todaySpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.todayCPA > 0 ? formatNumber(summaryData.todayCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.todayCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.todayCTR}%</td>
                     </tr>
                     
@@ -739,11 +817,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>이전 7일</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysSpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.prev7daysCPA > 0 ? formatNumber(summaryData.prev7daysCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.prev7daysCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.prev7daysClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.prev7daysCTR}%</td>
                     </tr>
                     
@@ -752,11 +830,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>최근 7일</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysSpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.last7daysCPA > 0 ? formatNumber(summaryData.last7daysCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.last7daysCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.last7daysClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.last7daysCTR}%</td>
                     </tr>
                     
@@ -794,11 +872,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>전월</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthSpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.lastMonthCPA > 0 ? formatNumber(summaryData.lastMonthCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.lastMonthCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.lastMonthClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.lastMonthCTR}%</td>
                     </tr>
                     
@@ -807,11 +885,11 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>당월</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthSpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthCPC)}</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthConversions)}건</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthConversions)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.thisMonthCPA > 0 ? formatNumber(summaryData.thisMonthCPA) : '-'}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.thisMonthCVR}%</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthImpressions)}회</td>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthClicks)}회</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthImpressions)}</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthClicks)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.thisMonthCTR}%</td>
                     </tr>
                     
@@ -917,11 +995,48 @@ const KeywordData = () => {
           >
             <table style={{ width: `${getVisibleColumns().length * 150}px`, minWidth: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead>
-                <tr style={{ backgroundColor: '#f8f9fa' }}>
-                  {getVisibleColumns().map(column => (
-                    <th key={column} style={{ padding: '12px', textAlign: 'center', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                      {column}
+                {/* 첫 번째 행: 카테고리 헤더 */}
+                <tr>
+                  {getStructuredColumns().map((column, index) => (
+                    <th 
+                      key={`category-${index}`} 
+                      colSpan={column.colspan} 
+                      rowSpan={column.rowspan}
+                      style={{ 
+                        padding: '12px', 
+                        textAlign: 'center', 
+                        border: '1px solid #dee2e6', 
+                        fontSize: '12px', 
+                        width: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
+                        minWidth: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
+                        backgroundColor: column.color,
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {column.name}
                     </th>
+                  ))}
+                </tr>
+                {/* 두 번째 행: 세부 헤더 */}
+                <tr>
+                  {getStructuredColumns().map((column, index) => (
+                    column.subColumns ? column.subColumns.map((subColumn, subIndex) => (
+                      <th 
+                        key={`sub-${index}-${subIndex}`}
+                        style={{ 
+                          padding: '12px', 
+                          textAlign: 'center', 
+                          border: '1px solid #dee2e6', 
+                          fontSize: '12px', 
+                          width: '150px', 
+                          minWidth: '150px',
+                          backgroundColor: column.color,
+                          fontWeight: 'normal'
+                        }}
+                      >
+                        {subColumn}
+                      </th>
+                    )) : null
                   ))}
                 </tr>
               </thead>
@@ -985,22 +1100,22 @@ const KeywordData = () => {
                       {displayColumns.전환수 && (
                         <>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.todayConversions)}건
+                            {formatNumber(data.todayConversions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.yesterdayConversions)}건
+                            {formatNumber(data.yesterdayConversions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.last7daysConversions)}건
+                            {formatNumber(data.last7daysConversions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.prev7daysConversions)}건
+                            {formatNumber(data.prev7daysConversions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.thisMonthConversions)}건
+                            {formatNumber(data.thisMonthConversions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.lastMonthConversions)}건
+                            {formatNumber(data.lastMonthConversions)}
                           </td>
                         </>
                       )}
@@ -1038,10 +1153,10 @@ const KeywordData = () => {
                             {data.adGroup}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.impressions)}회
+                            {formatNumber(data.impressions)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
-                            {formatNumber(data.clicks)}회
+                            {formatNumber(data.clicks)}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
                             {data.ctr}%
@@ -1087,11 +1202,48 @@ const KeywordData = () => {
                             >
                               <table style={{ width: `${getVisibleColumns().length * 150}px`, minWidth: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                                 <thead>
-                                  <tr style={{ backgroundColor: '#e9ecef' }}>
-                                    {getVisibleColumns().map(column => (
-                                      <th key={column} style={{ padding: '8px', textAlign: 'center', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                        {column}
+                                  {/* 첫 번째 행: 카테고리 헤더 */}
+                                  <tr>
+                                    {getStructuredColumns().map((column, index) => (
+                                      <th 
+                                        key={`expanded-category-${index}`} 
+                                        colSpan={column.colspan} 
+                                        rowSpan={column.rowspan}
+                                        style={{ 
+                                          padding: '8px', 
+                                          textAlign: 'center', 
+                                          border: '1px solid #adb5bd', 
+                                          fontSize: '11px', 
+                                          width: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
+                                          minWidth: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
+                                          backgroundColor: column.color,
+                                          fontWeight: 'bold'
+                                        }}
+                                      >
+                                        {column.name}
                                       </th>
+                                    ))}
+                                  </tr>
+                                  {/* 두 번째 행: 세부 헤더 */}
+                                  <tr>
+                                    {getStructuredColumns().map((column, index) => (
+                                      column.subColumns ? column.subColumns.map((subColumn, subIndex) => (
+                                        <th 
+                                          key={`expanded-sub-${index}-${subIndex}`}
+                                          style={{ 
+                                            padding: '8px', 
+                                            textAlign: 'center', 
+                                            border: '1px solid #adb5bd', 
+                                            fontSize: '11px', 
+                                            width: '150px', 
+                                            minWidth: '150px',
+                                            backgroundColor: column.color,
+                                            fontWeight: 'normal'
+                                          }}
+                                        >
+                                          {subColumn}
+                                        </th>
+                                      )) : null
                                     ))}
                                   </tr>
                                 </thead>
@@ -1153,22 +1305,22 @@ const KeywordData = () => {
                                       {displayColumns.전환수 && (
                                         <>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.todayConversions)}건
+                                            {formatNumber(item.todayConversions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.yesterdayConversions)}건
+                                            {formatNumber(item.yesterdayConversions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.last7daysConversions)}건
+                                            {formatNumber(item.last7daysConversions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.prev7daysConversions)}건
+                                            {formatNumber(item.prev7daysConversions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.thisMonthConversions)}건
+                                            {formatNumber(item.thisMonthConversions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.lastMonthConversions)}건
+                                            {formatNumber(item.lastMonthConversions)}
                                           </td>
                                         </>
                                       )}
@@ -1206,10 +1358,10 @@ const KeywordData = () => {
                                             {item.adGroup}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.impressions)}회
+                                            {formatNumber(item.impressions)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
-                                            {formatNumber(item.clicks)}회
+                                            {formatNumber(item.clicks)}
                                           </td>
                                           <td style={{ padding: '8px', textAlign: 'right', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
                                             {item.ctr}%
@@ -1282,6 +1434,16 @@ const KeywordData = () => {
                 다음
               </button>
             </div>
+          </div>
+
+          {/* 표시 개수 텍스트 */}
+          <div style={{ 
+            marginTop: '15px', 
+            fontSize: '14px', 
+            color: '#666',
+            textAlign: 'center'
+          }}>
+            총 {searchResults.length}개 중 {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, searchResults.length)}개 표시
           </div>
         </div>
       )}

@@ -117,7 +117,7 @@
 }
 
 .filter-item:nth-child(3) {
-  min-width: 180px;
+  min-width: 120px;
 }
 
 .filter-item:first-child {
