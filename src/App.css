@@ -218,6 +218,7 @@
   border-radius: 4px;
   font-size: 14px;
   background-color: white;
+  min-width: 120px;
 }
 
 .filter-item select:focus,
@@ -305,6 +306,67 @@
 
 .search-button:active {
   transform: translateY(1px);
+}
+
+/* 지표 선택 dropdown 고정 너비 */
+.filter-item:nth-child(3) select {
+  min-width: 130px;
+  width: 130px;
+}
+
+/* 모든 select 요소 고정 너비 강화 */
+.filter-section select {
+  min-width: 120px;
+  width: auto;
+}
+
+/* KPI 확장 영역 애니메이션 */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 플로팅 KPI 오버레이 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 플로팅 버튼 확장 애니메이션 */
+@keyframes expandFromButton {
+  from {
+    opacity: 0;
+    transform: scale(0.1);
+    width: 120px;
+    height: 50px;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    width: 400px;
+    height: auto;
+  }
 }
 
 @media (max-width: 1200px) {

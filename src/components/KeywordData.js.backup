@@ -174,7 +174,7 @@ const KeywordData = () => {
     
     // 초기 로딩 시 데이터 표시
     const initialData = generateRandomData();
-    // 기본 정렬: 기준일 광고비 내림차순
+    // 기본 정렬: 당일 광고비 내림차순
     const sortedData = [...initialData].sort((a, b) => b.todaySpend - a.todaySpend);
     setSearchResults(sortedData);
     setHasSearched(true);
@@ -323,16 +323,16 @@ const KeywordData = () => {
     const additionalColumns = [];
     
     if (displayColumns.광고비) {
-      additionalColumns.push('기준일(광고비)', '전일(광고비)', '최근 7일(광고비)', '이전 7일(광고비)', '기준월(광고비)', '전월(광고비)');
+      additionalColumns.push('당일(광고비)', '전일(광고비)', '최근 7일(광고비)', '이전 7일(광고비)', '당월(광고비)', '전월(광고비)');
     }
     if (displayColumns.CPC) {
-      additionalColumns.push('기준일(CPC)', '전일(CPC)', '최근 7일(CPC)', '이전 7일(CPC)', '기준월(CPC)', '전월(CPC)');
+      additionalColumns.push('당일(CPC)', '전일(CPC)', '최근 7일(CPC)', '이전 7일(CPC)', '당월(CPC)', '전월(CPC)');
     }
     if (displayColumns.전환수) {
-      additionalColumns.push('기준일(전환수)', '전일(전환수)', '최근 7일(전환수)', '이전 7일(전환수)', '기준월(전환수)', '전월(전환수)');
+      additionalColumns.push('당일(전환수)', '전일(전환수)', '최근 7일(전환수)', '이전 7일(전환수)', '당월(전환수)', '전월(전환수)');
     }
     if (displayColumns.CPA) {
-      additionalColumns.push('기준일(CPA)', '전일(CPA)', '최근 7일(CPA)', '이전 7일(CPA)', '기준월(CPA)', '전월(CPA)');
+      additionalColumns.push('당일(CPA)', '전일(CPA)', '최근 7일(CPA)', '이전 7일(CPA)', '당월(CPA)', '전월(CPA)');
     }
     if (displayColumns.기타) {
       additionalColumns.push('CVR', '캠페인', '광고그룹', '노출수', '클릭수', 'CTR');
@@ -362,7 +362,7 @@ const KeywordData = () => {
     });
     
     // 각 카테고리별 컬럼들
-    const periodColumns = ['기준일', '전일', '최근 7일', '이전 7일', '기준월', '전월'];
+    const periodColumns = ['당일', '전일', '최근 7일', '이전 7일', '당월', '전월'];
     
     if (displayColumns.광고비) {
       columns.push({ 
@@ -598,9 +598,13 @@ const KeywordData = () => {
   const getChangeColor = (rate, metric) => {
     if (rate === '-') return '#6b7280'; // 회색
     const numRate = parseFloat(rate);
+    const isPositiveMetric = ['광고비', '전환수', 'CVR', '노출수', '클릭수', 'CTR'].includes(metric);
     
-    // 모든 지표에 대해 0% 초과면 초록색, 0% 미만이면 빨간색
-    return numRate > 0 ? '#22c55e' : '#ef4444'; // 초록색 : 빨간색
+    if (isPositiveMetric) {
+      return numRate >= 0 ? '#22c55e' : '#ef4444'; // 초록색 : 빨간색
+    } else {
+      return numRate >= 0 ? '#ef4444' : '#22c55e'; // 빨간색 : 초록색 (CPC, CPA)
+    }
   };
   
   // 등락률 표시
@@ -800,9 +804,9 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.yesterdayCTR}%</td>
                     </tr>
                     
-                    {/* 기준일 */}
+                    {/* 당일 */}
                     <tr>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>기준일</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>당일</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todaySpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayCPC)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.todayConversions)}</td>
@@ -813,7 +817,7 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.todayCTR}%</td>
                     </tr>
                     
-                    {/* 등락 (기준일/전일) */}
+                    {/* 등락 (당일/전일) */}
                     <tr style={{ backgroundColor: '#f8f9fa' }}>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>등락</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>
@@ -910,9 +914,9 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.lastMonthCTR}%</td>
                     </tr>
                     
-                    {/* 기준월 */}
+                    {/* 당월 */}
                     <tr>
-                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>기준월</td>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>당월</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthSpend)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthCPC)}</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{formatNumber(summaryData.thisMonthConversions)}</td>
@@ -923,7 +927,7 @@ const KeywordData = () => {
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>{summaryData.thisMonthCTR}%</td>
                     </tr>
                     
-                    {/* 등락 (기준월/전월) */}
+                    {/* 등락 (당월/전월) */}
                     <tr style={{ backgroundColor: '#f8f9fa' }}>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>등락</td>
                       <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'right' }}>
@@ -1040,9 +1044,7 @@ const KeywordData = () => {
                         width: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
                         minWidth: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
                         backgroundColor: column.color,
-                        fontWeight: 'bold',
-                        ...(index === 0 ? { position: 'sticky', left: 0, zIndex: 10 } : {}),
-                        ...(index === 1 ? { position: 'sticky', left: '150px', zIndex: 10 } : {})
+                        fontWeight: 'bold'
                       }}
                     >
                       {column.name}
@@ -1063,9 +1065,7 @@ const KeywordData = () => {
                           width: '150px', 
                           minWidth: '150px',
                           backgroundColor: column.color,
-                          fontWeight: 'normal',
-                          ...(index === 0 ? { position: 'sticky', left: `${150 * subIndex}px`, zIndex: 10 } : {}),
-                          ...(index === 1 ? { position: 'sticky', left: `${150 + (150 * subIndex)}px`, zIndex: 10 } : {})
+                          fontWeight: 'normal'
                         }}
                       >
                         {subColumn}
@@ -1081,31 +1081,10 @@ const KeywordData = () => {
                       style={{ cursor: 'pointer' }}
                       onClick={() => handleRowClick(index)}
                     >
-                      <td style={{ 
-                        padding: '12px', 
-                        border: '1px solid #dee2e6', 
-                        textAlign: 'center', 
-                        fontSize: '12px', 
-                        width: '150px', 
-                        minWidth: '150px',
-                        position: 'sticky',
-                        left: 0,
-                        backgroundColor: '#fff',
-                        zIndex: 9
-                      }}>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', textAlign: 'center', fontSize: '12px', width: '150px', minWidth: '150px' }}>
                         {data.platform}
                       </td>
-                      <td style={{ 
-                        padding: '12px', 
-                        border: '1px solid #dee2e6', 
-                        fontSize: '12px', 
-                        width: '150px', 
-                        minWidth: '150px',
-                        position: 'sticky',
-                        left: '150px',
-                        backgroundColor: '#fff',
-                        zIndex: 9
-                      }}>
+                      <td style={{ padding: '12px', border: '1px solid #dee2e6', fontSize: '12px', width: '150px', minWidth: '150px' }}>
                         {data.keyword}
                       </td>
                       {displayColumns.광고비 && (
@@ -1259,9 +1238,9 @@ const KeywordData = () => {
                                 <thead>
                                   {/* 첫 번째 행: 카테고리 헤더 */}
                                   <tr>
-                                    {getStructuredColumns().map((column, columnIndex) => (
+                                    {getStructuredColumns().map((column, index) => (
                                       <th 
-                                        key={`expanded-category-${columnIndex}`} 
+                                        key={`expanded-category-${index}`} 
                                         colSpan={column.colspan} 
                                         rowSpan={column.rowspan}
                                         style={{ 
@@ -1272,9 +1251,7 @@ const KeywordData = () => {
                                           width: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
                                           minWidth: column.rowspan === 2 ? '150px' : `${column.colspan * 150}px`,
                                           backgroundColor: column.color,
-                                          fontWeight: 'bold',
-                                          ...(columnIndex === 0 ? { position: 'sticky', left: 0, zIndex: 10 } : {}),
-                                          ...(columnIndex === 1 ? { position: 'sticky', left: '150px', zIndex: 10 } : {})
+                                          fontWeight: 'bold'
                                         }}
                                       >
                                         {column.name}
@@ -1283,10 +1260,10 @@ const KeywordData = () => {
                                   </tr>
                                   {/* 두 번째 행: 세부 헤더 */}
                                   <tr>
-                                    {getStructuredColumns().map((column, columnIndex) => (
+                                    {getStructuredColumns().map((column, index) => (
                                       column.subColumns ? column.subColumns.map((subColumn, subIndex) => (
                                         <th 
-                                          key={`expanded-sub-${columnIndex}-${subIndex}`}
+                                          key={`expanded-sub-${index}-${subIndex}`}
                                           style={{ 
                                             padding: '8px', 
                                             textAlign: 'center', 
@@ -1295,9 +1272,7 @@ const KeywordData = () => {
                                             width: '150px', 
                                             minWidth: '150px',
                                             backgroundColor: column.color,
-                                            fontWeight: 'normal',
-                                            ...(columnIndex === 0 ? { position: 'sticky', left: `${150 * subIndex}px`, zIndex: 10 } : {}),
-                                            ...(columnIndex === 1 ? { position: 'sticky', left: `${150 + (150 * subIndex)}px`, zIndex: 10 } : {})
+                                            fontWeight: 'normal'
                                           }}
                                         >
                                           {subColumn}
@@ -1311,31 +1286,10 @@ const KeywordData = () => {
                                     .filter(item => item.keyword === data.keyword)
                                     .map((item, subIndex) => (
                                     <tr key={subIndex}>
-                                      <td style={{ 
-                                        padding: '8px', 
-                                        border: '1px solid #adb5bd', 
-                                        textAlign: 'center', 
-                                        fontSize: '11px', 
-                                        width: '150px', 
-                                        minWidth: '150px',
-                                        position: 'sticky',
-                                        left: 0,
-                                        backgroundColor: '#f8f9fa',
-                                        zIndex: 9
-                                      }}>
+                                      <td style={{ padding: '8px', border: '1px solid #adb5bd', textAlign: 'center', fontSize: '11px', width: '150px', minWidth: '150px' }}>
                                         {item.platform}
                                       </td>
-                                      <td style={{ 
-                                        padding: '8px', 
-                                        border: '1px solid #adb5bd', 
-                                        fontSize: '11px', 
-                                        width: '150px', 
-                                        minWidth: '150px',
-                                        position: 'sticky',
-                                        left: '150px',
-                                        backgroundColor: '#f8f9fa',
-                                        zIndex: 9
-                                      }}>
+                                      <td style={{ padding: '8px', border: '1px solid #adb5bd', fontSize: '11px', width: '150px', minWidth: '150px' }}>
                                         {item.keyword}
                                       </td>
                                       {displayColumns.광고비 && (
@@ -1528,327 +1482,306 @@ const KeywordData = () => {
         </div>
       )}
 
-      <>
-        {/* 플로팅 KPI 확장 영역 */}
-        <div 
-          style={{
-            position: 'fixed',
-            bottom: '30px',
-            right: '30px',
-            zIndex: 1000,
-            transition: 'all 0.3s ease'
-          }}
-        >
-          {showKpiExpanded ? (
-            // 확장된 KPI 카드들
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '20px',
-              padding: '25px',
-              width: '400px',
-              maxHeight: '80vh',
-              overflow: 'auto',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-              animation: 'expandFromButton 0.3s ease-out',
-              transformOrigin: 'bottom right'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ margin: 0, color: '#007bff', fontSize: '18px' }}>KPI 달성률</h3>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {isEditingKpi ? (
-                    <>
-                      <button
-                        onClick={handleKpiSave}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '15px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        저장
-                      </button>
-                      <button
-                        onClick={handleKpiCancel}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#6c757d',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '15px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        취소
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditingKpi(true)}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#ffc107',
-                        color: 'black',
-                        border: 'none',
-                        borderRadius: '15px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      KPI 수정
-                    </button>
-                  )}
+      {/* 플로팅 액션 버튼 */}
+      <button 
+        onClick={() => setShowKpiExpanded(!showKpiExpanded)}
+        style={{
+          position: 'fixed',
+          bottom: '30px',
+          right: '30px',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '50px',
+          padding: '15px 25px',
+          cursor: 'pointer',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          boxShadow: '0 4px 12px rgba(0, 123, 255, 0.3)',
+          zIndex: 1000,
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = '#0056b3';
+          e.target.style.transform = 'translateY(-2px)';
+          e.target.style.boxShadow = '0 6px 16px rgba(0, 123, 255, 0.4)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = '#007bff';
+          e.target.style.transform = 'translateY(0px)';
+          e.target.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.3)';
+        }}
+      >
+        KPI 확인
+      </button>
+
+      {/* KPI 달성률 확장 영역 */}
+      {showKpiExpanded && (
+        <div className="data-card" style={{ 
+          marginTop: '40px', 
+          marginBottom: '40px',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2>KPI 달성률</h2>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {isEditingKpi ? (
+                <>
                   <button
-                    onClick={() => setShowKpiExpanded(false)}
+                    onClick={handleKpiSave}
                     style={{
-                      padding: '6px 8px',
-                      backgroundColor: '#dc3545',
+                      padding: '8px 16px',
+                      backgroundColor: '#28a745',
                       color: 'white',
                       border: 'none',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      width: '28px',
-                      height: '28px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                      borderRadius: '4px',
+                      cursor: 'pointer'
                     }}
                   >
-                    ×
+                    저장
                   </button>
-                </div>
-              </div>
+                  <button
+                    onClick={handleKpiCancel}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: '#6c757d',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    취소
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setIsEditingKpi(true)}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#ffc107',
+                    color: 'black',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  KPI 수정
+                </button>
+              )}
+              <button
+                onClick={() => setShowKpiExpanded(false)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                ×
+              </button>
+            </div>
+          </div>
 
-              {(() => {
-                const summaryData = getSummaryData();
-                if (!summaryData) return null;
+            {(() => {
+              const summaryData = getSummaryData();
+              if (!summaryData) return null;
 
-                return (
+              return (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr',
+                  gridTemplateRows: 'repeat(6, 1fr)',
+                  gap: '20px',
+                  marginBottom: '20px'
+                }}>
+                  {/* 광고비 카드 */}
                   <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px'
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
                   }}>
-                    {/* 광고비 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>광고비</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.spend}
-                              onChange={(e) => handleKpiTargetChange('spend', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.spend)
-                          )}원
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthSpend)}원
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)}%
-                      </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>광고비</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.spend}
+                            onChange={(e) => handleKpiTargetChange('spend', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          formatNumber(kpiTargets.spend)
+                        )}원
+                      </span>
                     </div>
-
-                    {/* 전환수 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>전환수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.conversion}
-                              onChange={(e) => handleKpiTargetChange('conversion', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.conversion)
-                          )}건
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthConversions)}건
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)}%
-                      </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {formatNumber(summaryData.thisMonthSpend)}원
                     </div>
-
-                    {/* CPA 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>CPA</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.cpa}
-                              onChange={(e) => handleKpiTargetChange('cpa', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.cpa)
-                          )}원
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthCPA)}원
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)}%
-                      </div>
-                    </div>
-
-                    {/* CVR 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>CVR</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.cvr}
-                              onChange={(e) => handleKpiTargetChange('cvr', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            kpiTargets.cvr
-                          )}%
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {summaryData.thisMonthCVR}%
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)}%
-                      </div>
-                    </div>
-
-                    {/* 노출수 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>노출수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.impressions}
-                              onChange={(e) => handleKpiTargetChange('impressions', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.impressions)
-                          )}회
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthImpressions)}회
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)}%
-                      </div>
-                    </div>
-
-                    {/* 클릭수 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>클릭수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.clicks}
-                              onChange={(e) => handleKpiTargetChange('clicks', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.clicks)
-                          )}회
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthClicks)}회
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)}%
-                      </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)}%
                     </div>
                   </div>
-                );
-              })()}
-            </div>
-          ) : (
-            // 기본 플로팅 버튼
-            <button 
-              onClick={() => setShowKpiExpanded(true)}
-              style={{
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '50px',
-                padding: '15px 25px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(0, 123, 255, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#0056b3';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 16px rgba(0, 123, 255, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#007bff';
-                e.target.style.transform = 'translateY(0px)';
-                e.target.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.3)';
-              }}
-            >
-              KPI 확인
-            </button>
-          )}
+
+                  {/* 전환수 카드 */}
+                  <div style={{
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>전환수</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.conversion}
+                            onChange={(e) => handleKpiTargetChange('conversion', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          formatNumber(kpiTargets.conversion)
+                        )}건
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {formatNumber(summaryData.thisMonthConversions)}건
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)}%
+                    </div>
+                  </div>
+
+                  {/* CPA 카드 */}
+                  <div style={{
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>CPA</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.cpa}
+                            onChange={(e) => handleKpiTargetChange('cpa', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          formatNumber(kpiTargets.cpa)
+                        )}원
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {formatNumber(summaryData.thisMonthCPA)}원
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)}%
+                    </div>
+                  </div>
+
+                  {/* CVR 카드 */}
+                  <div style={{
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>CVR</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.cvr}
+                            onChange={(e) => handleKpiTargetChange('cvr', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          kpiTargets.cvr
+                        )}%
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {summaryData.thisMonthCVR}%
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)}%
+                    </div>
+                  </div>
+
+                  {/* 노출수 카드 */}
+                  <div style={{
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>노출수</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.impressions}
+                            onChange={(e) => handleKpiTargetChange('impressions', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          formatNumber(kpiTargets.impressions)
+                        )}회
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {formatNumber(summaryData.thisMonthImpressions)}회
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)}%
+                    </div>
+                  </div>
+
+                  {/* 클릭수 카드 */}
+                  <div style={{
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <h4 style={{ margin: 0 }}>클릭수</h4>
+                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                        목표값: {isEditingKpi ? (
+                          <input
+                            type="number"
+                            value={kpiTargets.clicks}
+                            onChange={(e) => handleKpiTargetChange('clicks', e.target.value)}
+                            style={{ width: '80px', padding: '2px 4px', fontSize: '12px' }}
+                          />
+                        ) : (
+                          formatNumber(kpiTargets.clicks)
+                        )}회
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', marginBottom: '10px' }}>
+                      {formatNumber(summaryData.thisMonthClicks)}회
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#28a745' }}>
+                      달성률: {calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)}%
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
         </div>
-      </>
+      )}
     </div>
   );
 };

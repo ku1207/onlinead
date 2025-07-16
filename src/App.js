@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import DailyData from './components/DailyData';
 import KeywordData from './components/KeywordData';
-import MediaData from './components/MediaData';
+import SettingsManagement from './components/SettingsManagement';
+import ApiManagement from './components/ApiManagement';
 import Login from './components/Login';
 import './App.css';
 
@@ -50,13 +49,25 @@ function App() {
         <Sidebar user={user} onLogout={handleLogout} />
         <div className="main-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/daily-data" element={<DailyData />} />
+            <Route path="/" element={<KeywordData />} />
             <Route path="/keyword-data" element={<KeywordData />} />
-            <Route path="/media-data" element={<MediaData />} />
-            <Route path="/media-data/:platform" element={<MediaData />} />
-            <Route path="/login" element={<Navigate to="/dashboard" />} />
+            <Route 
+              path="/settings-management" 
+              element={
+                user.type === '관리자' ? 
+                <SettingsManagement /> : 
+                <Navigate to="/keyword-data" />
+              } 
+            />
+            <Route 
+              path="/api-management" 
+              element={
+                user.type === '관리자' ? 
+                <ApiManagement /> : 
+                <Navigate to="/keyword-data" />
+              } 
+            />
+            <Route path="/login" element={<Navigate to="/keyword-data" />} />
           </Routes>
         </div>
       </div>

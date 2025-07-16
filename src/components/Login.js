@@ -43,7 +43,7 @@ const Login = ({ onLogin }) => {
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
-          <h2>광고 관리 시스템</h2>
+          <h2>광고 실적확인 시스템</h2>
           <p>로그인하여 시스템을 이용하세요</p>
         </div>
         

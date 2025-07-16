@@ -6,39 +6,22 @@ const Sidebar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [advertiser, setAdvertiser] = useState('A광고주');
-  const [isMediaExpanded, setIsMediaExpanded] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', name: '대시보드', path: '/dashboard' },
-    { id: 'daily-data', name: '일자별 데이터', path: '/daily-data' },
     { id: 'keyword-data', name: '매체 합산 데이터', path: '/keyword-data' },
-    { id: 'media-data', name: '매체별 데이터', path: '/media-data' }
-  ];
-
-  const mediaPlatforms = [
-    { id: 'naver', name: '네이버', path: '/media-data/naver' },
-    { id: 'kakao', name: '카카오', path: '/media-data/kakao' },
-    { id: 'google', name: '구글', path: '/media-data/google' },
-    { id: 'facebook', name: '페이스북', path: '/media-data/facebook' },
-    { id: 'tiktok', name: '틱톡', path: '/media-data/tiktok' }
+    ...(user.type === '관리자' ? [
+      { id: 'settings-management', name: '설정', path: '/settings-management' }
+    ] : [])
   ];
 
   const handleMenuClick = (item) => {
-    if (item.id === 'media-data') {
-      setIsMediaExpanded(!isMediaExpanded);
-    } else {
-      navigate(item.path);
-    }
-  };
-
-  const handlePlatformClick = (platform) => {
-    navigate(platform.path);
+    navigate(item.path);
   };
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>광고 관리 시스템</h2>
+        <h2>광고 실적확인 시스템</h2>
       </div>
       
       <div className="user-info">
@@ -75,29 +58,7 @@ const Sidebar = ({ user, onLogout }) => {
                 onClick={() => handleMenuClick(item)}
               >
                 {item.name}
-                {item.id === 'media-data' && (
-                  <span className={`expand-icon ${isMediaExpanded ? 'expanded' : ''}`}>
-                    ▼
-                  </span>
-                )}
               </button>
-              
-              {item.id === 'media-data' && (
-                <div className={`submenu ${isMediaExpanded ? 'expanded' : ''}`}>
-                  <ul>
-                    {mediaPlatforms.map((platform) => (
-                      <li key={platform.id}>
-                        <button
-                          className={`nav-button submenu-button ${location.pathname === platform.path ? 'active' : ''}`}
-                          onClick={() => handlePlatformClick(platform)}
-                        >
-                          {platform.name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </li>
           ))}
         </ul>
