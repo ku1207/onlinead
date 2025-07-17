@@ -161,6 +161,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+  margin-left: 8px;
   transition: background-color 0.3s;
 }
 
@@ -288,6 +289,21 @@ input:checked + .slider:before {
 }
 
 .api-management-button:hover {
+  background-color: #138496;
+}
+
+.media-management-button {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+.media-management-button:hover {
   background-color: #138496;
 }
 
@@ -450,4 +466,104 @@ input:checked + .slider:before {
 
 .save-button:hover {
   background-color: #0056b3;
+}
+
+/* 매체 관리 모달 스타일 */
+.media-management-modal {
+  width: 900px;
+  max-width: 95%;
+}
+
+.media-management-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.media-management-table th,
+.media-management-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.media-management-table td:nth-child(2) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.media-management-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.media-management-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.media-management-table select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.media-management-table input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.media-management-table input[type="text"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.media-management-table .switch {
+  transform: scale(0.8);
+}
+
+.media-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.media-table-actions .add-media-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.media-table-actions .add-media-button:hover {
+  background-color: #218838;
+}
+
+.media-management-table .delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.media-management-table .delete-button:hover {
+  background-color: #c82333;
 } 

@@ -26,6 +26,10 @@ const KeywordData = () => {
   const [expandedRows, setExpandedRows] = useState({});
   const [searchCriteria, setSearchCriteria] = useState('');
   
+  // 다운로드 관련 상태
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [selectedDownloadItem, setSelectedDownloadItem] = useState('매체 합산 데이터');
+  
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
   const [isEditingKpi, setIsEditingKpi] = useState(false);
@@ -43,6 +47,25 @@ const KeywordData = () => {
   const bottomScrollRef = useRef(null);
   const expandedTopScrollRefs = useRef({});
   const expandedBottomScrollRefs = useRef({});
+  
+  // 다운로드 관련 함수들
+  const handleDownloadItemChange = (value) => {
+    setSelectedDownloadItem(value);
+  };
+
+  const handleDownloadConfirm = () => {
+    // 다운로드 로직 (실제 구현 필요)
+    alert(`${selectedDownloadItem} 다운로드를 시작합니다.`);
+    
+    // 모달 닫기
+    setShowDownloadModal(false);
+    setSelectedDownloadItem('매체 합산 데이터');
+  };
+
+  const handleDownloadCancel = () => {
+    setShowDownloadModal(false);
+    setSelectedDownloadItem('매체 합산 데이터');
+  };
   
   // 스크롤 동기화 핸들러
   const handleTopScroll = () => {
@@ -638,8 +661,31 @@ const KeywordData = () => {
     <div style={{ width: '85%', margin: '0 auto', padding: '20px 0' }}>
       <ScrollbarStyle />
       
-      <div className="content-header" style={{ marginBottom: '30px' }}>
+      <div className="content-header" style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>매체 합산 데이터</h1>
+        <button 
+          className="download-button"
+          onClick={() => setShowDownloadModal(true)}
+          style={{
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '10px 20px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#0056b3';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#007bff';
+          }}
+        >
+          다운로드
+        </button>
       </div>
 
       {/* 필터 영역 */}
@@ -1524,6 +1570,47 @@ const KeywordData = () => {
             textAlign: 'center'
           }}>
             총 {searchResults.length}개 중 {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, searchResults.length)}개 표시
+          </div>
+        </div>
+      )}
+
+      {/* 다운로드 모달 */}
+      {showDownloadModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>다운로드</h3>
+            <div className="modal-content">
+              <div className="form-group">
+                <select
+                  value={selectedDownloadItem}
+                  onChange={(e) => handleDownloadItemChange(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontSize: '14px'
+                  }}
+                >
+                  <option value="매체 합산 데이터">매체 합산 데이터</option>
+                  <option value="RAW 데이터">RAW 데이터</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleDownloadCancel}
+              >
+                취소
+              </button>
+              <button 
+                className="save-button"
+                onClick={handleDownloadConfirm}
+              >
+                다운로드
+              </button>
+            </div>
           </div>
         </div>
       )}
