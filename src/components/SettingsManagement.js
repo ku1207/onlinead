@@ -837,7 +837,7 @@ const SettingsManagement = () => {
       {showMediaManagementModal && currentAdvertiser && (
         <div className="modal-overlay">
           <div className="modal media-management-modal" style={{ width: '800px', maxWidth: '95%', minWidth: '600px' }}>
-            <h3>{currentAdvertiser.name} - 매체 관리</h3>
+            <h3 style={{ textAlign: 'left' }}>{currentAdvertiser.name} - 매체 관리</h3>
             <div className="modal-content">
               <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>현재 매체 상태</h4>
@@ -924,7 +924,7 @@ const SettingsManagement = () => {
       {showKpiManagementModal && currentKpiAdvertiser && (
         <div className="modal-overlay">
           <div className="modal media-management-modal" style={{ width: '800px', maxWidth: '95%', minWidth: '600px' }}>
-            <h3>{currentKpiAdvertiser.name} - KPI 관리</h3>
+            <h3 style={{ textAlign: 'left' }}>{currentKpiAdvertiser.name} - KPI 관리</h3>
             <div className="modal-content">
               <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>현재 KPI 상태</h4>

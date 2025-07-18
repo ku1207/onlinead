@@ -40,7 +40,6 @@ const KeywordData = () => {
   
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
-  const [isEditingKpi, setIsEditingKpi] = useState(false);
   const [kpiTargets, setKpiTargets] = useState({
     spend: 5000000,
     conversion: 300,
@@ -326,22 +325,7 @@ const KeywordData = () => {
     return rate >= 100 ? '#22c55e' : '#ef4444'; // 100% 이상이면 녹색, 미만이면 빨간색
   };
 
-  const handleKpiSave = () => {
-    setIsEditingKpi(false);
-    // 실제 저장 로직을 여기에 추가
-  };
 
-  const handleKpiCancel = () => {
-    setIsEditingKpi(false);
-    // 원래 값으로 복원하는 로직 추가 가능
-  };
-
-  const handleKpiTargetChange = (metric, value) => {
-    setKpiTargets(prev => ({
-      ...prev,
-      [metric]: parseFloat(value) || 0
-    }));
-  };
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -1881,73 +1865,24 @@ const KeywordData = () => {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h3 style={{ margin: 0, color: '#000000', fontSize: '18px' }}>KPI 달성률</h3>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {isEditingKpi ? (
-                    <>
-                      <button
-                        onClick={handleKpiSave}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '15px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        저장
-                      </button>
-                      <button
-                        onClick={handleKpiCancel}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#6c757d',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '15px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        취소
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditingKpi(true)}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#ffc107',
-                        color: 'black',
-                        border: 'none',
-                        borderRadius: '15px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      KPI 수정
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShowKpiExpanded(false)}
-                    style={{
-                      padding: '6px 8px',
-                      backgroundColor: 'transparent',
-                      color: '#dc3545',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      width: '28px',
-                      height: '28px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowKpiExpanded(false)}
+                  style={{
+                    padding: '6px 8px',
+                    backgroundColor: 'transparent',
+                    color: '#dc3545',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    width: '28px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ×
+                </button>
               </div>
 
               {(() => {
@@ -1970,16 +1905,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>광고비</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.spend}
-                              onChange={(e) => handleKpiTargetChange('spend', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.spend)
-                          )}원
+                          목표값: {formatNumber(kpiTargets.spend)}원
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
@@ -2000,16 +1926,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>전환수</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.conversion}
-                              onChange={(e) => handleKpiTargetChange('conversion', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.conversion)
-                          )}건
+                          목표값: {formatNumber(kpiTargets.conversion)}건
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
@@ -2030,16 +1947,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>CPA</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.cpa}
-                              onChange={(e) => handleKpiTargetChange('cpa', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.cpa)
-                          )}원
+                          목표값: {formatNumber(kpiTargets.cpa)}원
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
@@ -2060,16 +1968,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>CVR</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.cvr}
-                              onChange={(e) => handleKpiTargetChange('cvr', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            kpiTargets.cvr
-                          )}%
+                          목표값: {kpiTargets.cvr}%
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
@@ -2090,16 +1989,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>노출수</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.impressions}
-                              onChange={(e) => handleKpiTargetChange('impressions', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.impressions)
-                          )}회
+                          목표값: {formatNumber(kpiTargets.impressions)}회
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
@@ -2120,16 +2010,7 @@ const KeywordData = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <h4 style={{ margin: 0, fontSize: '14px' }}>클릭수</h4>
                         <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {isEditingKpi ? (
-                            <input
-                              type="number"
-                              value={kpiTargets.clicks}
-                              onChange={(e) => handleKpiTargetChange('clicks', e.target.value)}
-                              style={{ width: '60px', padding: '2px 4px', fontSize: '10px' }}
-                            />
-                          ) : (
-                            formatNumber(kpiTargets.clicks)
-                          )}회
+                          목표값: {formatNumber(kpiTargets.clicks)}회
                         </span>
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
