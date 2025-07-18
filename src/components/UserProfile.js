@@ -39,6 +39,12 @@ const UserProfile = ({ user }) => {
   };
 
   const handleSave = () => {
+    // 필수 항목 유효성 검사
+    if (!editData.username || !editData.password || !editData.name) {
+      alert('모든 필수 항목을 입력해주세요.');
+      return;
+    }
+
     // 여기에 실제 저장 로직을 구현
     console.log('저장할 데이터:', editData);
     setShowSuccessModal(true);
@@ -104,14 +110,15 @@ const UserProfile = ({ user }) => {
           </div>
           <div className="profile-info">
             <div className="info-group">
-              <label>아이디</label>
+              <label>아이디 *</label>
               {isEditing ? (
                 <input
                   type="text"
                   className="edit-input"
                   value={editData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
-                  placeholder="아이디를 입력하세요"
+                  placeholder="아이디를 입력해 주세요."
+                  required
                 />
               ) : (
                 <div className="info-value readonly">
@@ -121,14 +128,15 @@ const UserProfile = ({ user }) => {
             </div>
             
             <div className="info-group">
-              <label>비밀번호</label>
+              <label>비밀번호 *</label>
               {isEditing ? (
                 <input
                   type={showPassword ? "text" : "password"}
                   className="edit-input"
                   value={editData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="비밀번호를 입력하세요"
+                  placeholder="비밀번호를 입력해 주세요."
+                  required
                 />
               ) : (
                 <div className="password-display">
@@ -147,14 +155,15 @@ const UserProfile = ({ user }) => {
             </div>
             
             <div className="info-group">
-              <label>이름</label>
+              <label>이름 *</label>
               {isEditing ? (
                 <input
                   type="text"
                   className="edit-input"
                   value={editData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="이름을 입력하세요"
+                  placeholder="이름을 입력해 주세요."
+                  required
                 />
               ) : (
                 <div className="info-value readonly">
@@ -184,7 +193,7 @@ const UserProfile = ({ user }) => {
                   className="edit-input"
                   value={editData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="000-0000-0000"
+                  placeholder="연락처를 입력해 주세요."
                 />
               ) : (
                 <div className="info-value readonly">
@@ -201,7 +210,7 @@ const UserProfile = ({ user }) => {
                   className="edit-input"
                   value={editData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="이메일을 입력하세요"
+                  placeholder="이메일을 입력해 주세요."
                 />
               ) : (
                 <div className="info-value readonly">
@@ -210,20 +219,7 @@ const UserProfile = ({ user }) => {
               )}
             </div>
             
-            <div className="info-group">
-              <label>계정 상태</label>
-              <div className="info-value">
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={isEditing ? editData.active : (user.active !== false)}
-                    onChange={(e) => handleInputChange('active', e.target.checked)}
-                    disabled={!isEditing}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

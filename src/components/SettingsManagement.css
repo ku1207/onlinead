@@ -387,6 +387,7 @@ input:checked + .slider:before {
   margin: 0 0 20px 0;
   color: #333;
   font-size: 18px;
+  text-align: left;
 }
 
 .modal-content {
@@ -398,6 +399,7 @@ input:checked + .slider:before {
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
+  text-align: left;
 }
 
 .modal-content input {
@@ -418,6 +420,7 @@ input:checked + .slider:before {
   margin-bottom: 5px;
   font-weight: 600;
   color: #333;
+  text-align: left;
 }
 
 .modal-content .form-group input,

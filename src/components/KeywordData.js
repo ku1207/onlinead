@@ -31,6 +31,13 @@ const KeywordData = () => {
   const [selectedDownloadItem, setSelectedDownloadItem] = useState('매체 합산 데이터');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   
+  // 전환 업로드 관련 상태
+  const [showConversionUploadModal, setShowConversionUploadModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [showUploadSuccessModal, setShowUploadSuccessModal] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
   const [isEditingKpi, setIsEditingKpi] = useState(false);
@@ -68,6 +75,101 @@ const KeywordData = () => {
   const handleDownloadCancel = () => {
     setShowDownloadModal(false);
     setSelectedDownloadItem('매체 합산 데이터');
+  };
+  
+  // 전환 업로드 관련 함수들
+  const handleConversionUpload = () => {
+    setShowConversionUploadModal(true);
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === 'text/csv') {
+      setSelectedFile(file);
+    } else {
+      alert('CSV 파일만 업로드 가능합니다.');
+    }
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      if (file.type === 'text/csv') {
+        setSelectedFile(file);
+      } else {
+        alert('CSV 파일만 업로드 가능합니다.');
+      }
+    }
+  };
+
+  const handleUploadConfirm = () => {
+    if (!selectedFile) {
+      alert('파일을 선택해주세요.');
+      return;
+    }
+    
+    // 업로드 로직 (실제 구현 필요)
+    console.log('업로드할 파일:', selectedFile);
+    
+    // 모달 닫기
+    setShowConversionUploadModal(false);
+    setSelectedFile(null);
+    
+    // 성공 모달 표시
+    setShowUploadSuccessModal(true);
+  };
+
+  const handleUploadCancel = () => {
+    setShowConversionUploadModal(false);
+    setSelectedFile(null);
+  };
+
+  const handleTemplateDownload = () => {
+    // 템플릿 다운로드 로직 (실제 구현 필요)
+    console.log('전환 업로드 템플릿 다운로드');
+    
+    // 샘플 CSV 데이터 생성
+    const sampleData = [
+      ['매체', '키워드', '전환수', '전환비용', '전환율'],
+      ['네이버', '온라인광고', '10', '50000', '2.5%'],
+      ['구글', '디지털마케팅', '15', '45000', '3.0%'],
+      ['카카오', 'SEM', '8', '40000', '2.0%']
+    ];
+    
+    // CSV 문자열 생성
+    const csvContent = sampleData.map(row => row.join(',')).join('\n');
+    
+    // 다운로드 실행
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', '전환_업로드_템플릿.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
   // 스크롤 동기화 핸들러
@@ -672,29 +774,54 @@ const KeywordData = () => {
       
       <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>매체 합산 데이터</h1>
-        <button 
-          className="download-button"
-          onClick={() => setShowDownloadModal(true)}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            padding: '10px 20px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0056b3';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#007bff';
-          }}
-        >
-          다운로드
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            className="conversion-upload-button"
+            onClick={handleConversionUpload}
+            style={{
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '10px 20px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#218838';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#28a745';
+            }}
+          >
+            전환 업로드
+          </button>
+          <button 
+            className="download-button"
+            onClick={() => setShowDownloadModal(true)}
+            style={{
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '10px 20px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#0056b3';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#007bff';
+            }}
+          >
+            다운로드
+          </button>
+        </div>
       </div>
 
       {/* 필터 영역 */}
@@ -1624,6 +1751,110 @@ const KeywordData = () => {
         </div>
       )}
 
+      {/* 전환 업로드 모달 */}
+      {showConversionUploadModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>전환 업로드</h3>
+            <div className="modal-content">
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 'bold' }}>
+                  CSV 파일 업로드
+                </label>
+                <div
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  style={{
+                    width: '100%',
+                    minHeight: '120px',
+                    border: dragActive ? '2px dashed #007bff' : '2px dashed #ddd',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    cursor: 'pointer',
+                    backgroundColor: dragActive ? '#f8f9ff' : '#fafafa',
+                    transition: 'all 0.3s ease',
+                    position: 'relative'
+                  }}
+                  onClick={() => document.getElementById('file-input').click()}
+                >
+                  <div style={{ textAlign: 'center', pointerEvents: 'none' }}>
+                    <div style={{ fontSize: '24px', color: '#007bff', marginBottom: '10px' }}>
+                      📁
+                    </div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+                      {selectedFile ? selectedFile.name : '파일을 선택하거나 여기에 드래그하세요'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {selectedFile ? `크기: ${(selectedFile.size / 1024).toFixed(2)} KB` : 'CSV 파일만 업로드 가능합니다'}
+                    </div>
+                  </div>
+                  <input
+                    id="file-input"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileSelect}
+                    style={{
+                      position: 'absolute',
+                      opacity: 0,
+                      width: '100%',
+                      height: '100%',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="form-group" style={{ textAlign: 'right' }}>
+                <button 
+                  className="template-download-button"
+                  onClick={handleTemplateDownload}
+                  style={{
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    transition: 'all 0.3s ease',
+                    width: 'auto',
+                    display: 'inline-block'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#0056b3';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#007bff';
+                  }}
+                >
+                  템플릿 다운로드
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleUploadCancel}
+              >
+                취소
+              </button>
+              <button 
+                className="save-button"
+                onClick={handleUploadConfirm}
+              >
+                업로드
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <>
         {/* 플로팅 KPI 확장 영역 */}
         <div 
@@ -1957,6 +2188,26 @@ const KeywordData = () => {
               <button 
                 className="save-button"
                 onClick={() => setShowSuccessModal(false)}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 업로드 성공 모달 */}
+      {showUploadSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>업로드 완료</h3>
+            <div className="modal-content">
+              <p>전환 데이터 업로드가 완료되었습니다.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="save-button"
+                onClick={() => setShowUploadSuccessModal(false)}
               >
                 확인
               </button>

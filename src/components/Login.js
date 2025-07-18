@@ -81,6 +81,16 @@ const Login = ({ onLogin }) => {
           </button>
         </form>
         
+        <div className="login-footer">
+          <button 
+            type="button" 
+            className="register-link-button"
+            onClick={() => navigate('/register')}
+          >
+            회원가입
+          </button>
+        </div>
+        
         <div className="login-info">
           <p>테스트 계정:</p>
           <p>관리자: admin / admin123</p>

@@ -104,6 +104,37 @@
   transform: translateY(0);
 }
 
+.login-footer {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.register-link-button {
+  background: none;
+  border: 2px solid #667eea;
+  color: #667eea;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.register-link-button:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.register-link-button:active {
+  transform: translateY(0);
+}
+
 .login-info {
   background-color: #f8f9fa;
   padding: 15px;

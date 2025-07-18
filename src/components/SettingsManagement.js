@@ -17,6 +17,14 @@ const SettingsManagement = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [deleteMemberId, setDeleteMemberId] = useState(null);
+  const [showDeleteMediaModal, setShowDeleteMediaModal] = useState(false);
+  const [deleteMediaId, setDeleteMediaId] = useState(null);
+  const [showDeleteKpiModal, setShowDeleteKpiModal] = useState(false);
+  const [deleteKpiId, setDeleteKpiId] = useState(null);
+  const [showDeleteAdvertiserModal, setShowDeleteAdvertiserModal] = useState(false);
+  const [deleteAdvertiserId, setDeleteAdvertiserId] = useState(null);
 
   // 광고주 관리 상태
   const [advertisers, setAdvertisers] = useState([
@@ -56,7 +64,7 @@ const SettingsManagement = () => {
   const [currentKpiAdvertiser, setCurrentKpiAdvertiser] = useState(null);
   
   // 선택 가능한 매체 목록
-  const mediaOptions = ['네이버', '카카오', '구글', '메타', '틱톡', 'GA'];
+  const mediaOptions = ['네이버', '카카오', '구글', '메타', '틱톡'];
   
   // 선택 가능한 KPI 목록
   const kpiOptions = ['광고비', 'CPC', '전환수', 'CPA', 'CVR', '노출수', '클릭수', 'CTR'];
@@ -95,23 +103,27 @@ const SettingsManagement = () => {
   };
 
   const handleSaveMember = () => {
-    if (!editFormData.username || !editFormData.name || !editFormData.email || !editFormData.password || !editFormData.phone) {
-      alert('모든 필드를 입력해주세요.');
+    if (!editFormData.username || !editFormData.name || !editFormData.password) {
+      alert('모든 필수 항목을 입력해주세요.');
       return;
     }
 
-    // 이메일 유효성 검사
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(editFormData.email)) {
-      alert('올바른 이메일 형식을 입력해주세요.');
-      return;
+    // 이메일 유효성 검사 (입력된 경우에만)
+    if (editFormData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(editFormData.email)) {
+        alert('올바른 이메일 형식을 입력해주세요.');
+        return;
+      }
     }
 
-    // 전화번호 유효성 검사
-    const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
-    if (!phoneRegex.test(editFormData.phone)) {
-      alert('전화번호는 000-0000-0000 형식으로 입력해주세요.');
-      return;
+    // 전화번호 유효성 검사 (입력된 경우에만)
+    if (editFormData.phone) {
+      const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
+      if (!phoneRegex.test(editFormData.phone)) {
+        alert('전화번호는 000-0000-0000 형식으로 입력해주세요.');
+        return;
+      }
     }
 
     // 아이디 중복 검사 (현재 수정 중인 회원 제외)
@@ -123,13 +135,15 @@ const SettingsManagement = () => {
       return;
     }
 
-    // 이메일 중복 검사 (현재 수정 중인 회원 제외)
-    const isDuplicateEmail = members.some(member => 
-      member.id !== editingMember.id && member.email === editFormData.email
-    );
-    if (isDuplicateEmail) {
-      alert('이미 사용 중인 이메일입니다.');
-      return;
+    // 이메일 중복 검사 (현재 수정 중인 회원 제외, 이메일이 입력된 경우에만)
+    if (editFormData.email) {
+      const isDuplicateEmail = members.some(member => 
+        member.id !== editingMember.id && member.email === editFormData.email
+      );
+      if (isDuplicateEmail) {
+        alert('이미 사용 중인 이메일입니다.');
+        return;
+      }
     }
 
     // 회원 정보 업데이트
@@ -174,9 +188,23 @@ const SettingsManagement = () => {
   };
 
   const handleDeleteMember = (memberId) => {
-    if (window.confirm('정말로 이 회원을 삭제하시겠습니까?')) {
-      setMembers(prev => prev.filter(member => member.id !== memberId));
+    setDeleteMemberId(memberId);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteMemberId) {
+      setMembers(prev => prev.filter(member => member.id !== deleteMemberId));
+      setSuccessMessage('회원이 성공적으로 삭제되었습니다.');
+      setShowSuccessModal(true);
     }
+    setShowDeleteConfirmModal(false);
+    setDeleteMemberId(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmModal(false);
+    setDeleteMemberId(null);
   };
 
   // 광고주 관리 함수들
@@ -288,12 +316,17 @@ const SettingsManagement = () => {
   };
 
   const handleDeleteKpiFromAdvertiser = (kpiId) => {
-    if (window.confirm('정말로 이 지표를 삭제하시겠습니까?')) {
+    setDeleteKpiId(kpiId);
+    setShowDeleteKpiModal(true);
+  };
+
+  const handleConfirmDeleteKpi = () => {
+    if (deleteKpiId) {
       setAdvertisers(prev => prev.map(advertiser => {
         if (advertiser.id === currentKpiAdvertiser.id) {
           return {
             ...advertiser,
-            kpis: advertiser.kpis.filter(k => k.id !== kpiId)
+            kpis: advertiser.kpis.filter(k => k.id !== deleteKpiId)
           };
         }
         return advertiser;
@@ -301,15 +334,39 @@ const SettingsManagement = () => {
 
       setCurrentKpiAdvertiser(prev => ({
         ...prev,
-        kpis: prev.kpis.filter(k => k.id !== kpiId)
+        kpis: prev.kpis.filter(k => k.id !== deleteKpiId)
       }));
+      
+      setSuccessMessage('지표가 성공적으로 삭제되었습니다.');
+      setShowSuccessModal(true);
     }
+    setShowDeleteKpiModal(false);
+    setDeleteKpiId(null);
+  };
+
+  const handleCancelDeleteKpi = () => {
+    setShowDeleteKpiModal(false);
+    setDeleteKpiId(null);
   };
 
   const handleDeleteAdvertiser = (advertiserId) => {
-    if (window.confirm('정말로 이 광고주를 삭제하시겠습니까?')) {
-      setAdvertisers(prev => prev.filter(advertiser => advertiser.id !== advertiserId));
+    setDeleteAdvertiserId(advertiserId);
+    setShowDeleteAdvertiserModal(true);
+  };
+
+  const handleConfirmDeleteAdvertiser = () => {
+    if (deleteAdvertiserId) {
+      setAdvertisers(prev => prev.filter(advertiser => advertiser.id !== deleteAdvertiserId));
+      setSuccessMessage('광고주가 성공적으로 삭제되었습니다.');
+      setShowSuccessModal(true);
     }
+    setShowDeleteAdvertiserModal(false);
+    setDeleteAdvertiserId(null);
+  };
+
+  const handleCancelDeleteAdvertiser = () => {
+    setShowDeleteAdvertiserModal(false);
+    setDeleteAdvertiserId(null);
   };
 
   const handleAddMediaToAdvertiser = (advertiserId) => {
@@ -390,12 +447,17 @@ const SettingsManagement = () => {
   };
 
   const handleDeleteMediaFromAdvertiser = (mediaId) => {
-    if (window.confirm('정말로 이 매체를 삭제하시겠습니까?')) {
+    setDeleteMediaId(mediaId);
+    setShowDeleteMediaModal(true);
+  };
+
+  const handleConfirmDeleteMedia = () => {
+    if (deleteMediaId) {
       setAdvertisers(prev => prev.map(advertiser => {
         if (advertiser.id === currentAdvertiser.id) {
           return {
             ...advertiser,
-            medias: advertiser.medias.filter(m => m.id !== mediaId)
+            medias: advertiser.medias.filter(m => m.id !== deleteMediaId)
           };
         }
         return advertiser;
@@ -403,9 +465,19 @@ const SettingsManagement = () => {
 
       setCurrentAdvertiser(prev => ({
         ...prev,
-        medias: prev.medias.filter(m => m.id !== mediaId)
+        medias: prev.medias.filter(m => m.id !== deleteMediaId)
       }));
+      
+      setSuccessMessage('매체가 성공적으로 삭제되었습니다.');
+      setShowSuccessModal(true);
     }
+    setShowDeleteMediaModal(false);
+    setDeleteMediaId(null);
+  };
+
+  const handleCancelDeleteMedia = () => {
+    setShowDeleteMediaModal(false);
+    setDeleteMediaId(null);
   };
 
   // 매체 이름을 CSS 클래스명으로 변환
@@ -547,7 +619,6 @@ const SettingsManagement = () => {
                   <th>아이디</th>
                   <th>이름</th>
                   <th>권한</th>
-                  <th>이메일</th>
                   <th>활성화</th>
                   <th>관리</th>
                 </tr>
@@ -565,7 +636,6 @@ const SettingsManagement = () => {
                       </span>
                       </div>
                     </td>
-                    <td>{member.email}</td>
                     <td>
                       <label className="switch">
                         <input
@@ -633,22 +703,24 @@ const SettingsManagement = () => {
             <h3>회원 정보 수정</h3>
             <div className="modal-content">
               <div className="form-group">
-                <label>아이디</label>
+                <label>아이디 *</label>
                 <input
                   type="text"
                   value={editFormData.username || ''}
                   onChange={(e) => handleFormChange('username', e.target.value)}
                   placeholder="아이디를 입력하세요"
+                  required
                 />
               </div>
               <div className="form-group">
-                <label>비밀번호</label>
+                <label>비밀번호 *</label>
                 <div className="password-input-container">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={editFormData.password || ''}
                     onChange={(e) => handleFormChange('password', e.target.value)}
                     placeholder="비밀번호를 입력하세요"
+                    required
                   />
                   <button
                     type="button"
@@ -660,12 +732,13 @@ const SettingsManagement = () => {
                 </div>
               </div>
               <div className="form-group">
-                <label>이름</label>
+                <label>이름 *</label>
                 <input
                   type="text"
                   value={editFormData.name || ''}
                   onChange={(e) => handleFormChange('name', e.target.value)}
                   placeholder="이름을 입력하세요"
+                  required
                 />
               </div>
               <div className="form-group">
@@ -731,7 +804,7 @@ const SettingsManagement = () => {
                 type="text"
                 value={newAdvertiserName}
                 onChange={(e) => setNewAdvertiserName(e.target.value)}
-                placeholder="광고주명을 입력하세요"
+                placeholder="광고주명을 입력해 주세요."
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     handleAddAdvertiser();
@@ -946,6 +1019,110 @@ const SettingsManagement = () => {
                 }}
               >
                 닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>회원 삭제</h3>
+            <div className="modal-content">
+              <p>정말로 이 회원을 삭제하시겠습니까?</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleCancelDelete}
+              >
+                취소
+              </button>
+              <button 
+                className="delete-button"
+                onClick={handleConfirmDelete}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 매체 삭제 확인 모달 */}
+      {showDeleteMediaModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>매체 삭제</h3>
+            <div className="modal-content">
+              <p>정말로 이 매체를 삭제하시겠습니까?</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleCancelDeleteMedia}
+              >
+                취소
+              </button>
+              <button 
+                className="delete-button"
+                onClick={handleConfirmDeleteMedia}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* KPI 삭제 확인 모달 */}
+      {showDeleteKpiModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>지표 삭제</h3>
+            <div className="modal-content">
+              <p>정말로 이 지표를 삭제하시겠습니까?</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleCancelDeleteKpi}
+              >
+                취소
+              </button>
+              <button 
+                className="delete-button"
+                onClick={handleConfirmDeleteKpi}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 광고주 삭제 확인 모달 */}
+      {showDeleteAdvertiserModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>광고주 삭제</h3>
+            <div className="modal-content">
+              <p>정말로 이 광고주를 삭제하시겠습니까?</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={handleCancelDeleteAdvertiser}
+              >
+                취소
+              </button>
+              <button 
+                className="delete-button"
+                onClick={handleConfirmDeleteAdvertiser}
+              >
+                삭제
               </button>
             </div>
           </div>

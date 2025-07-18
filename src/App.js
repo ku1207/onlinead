@@ -6,6 +6,7 @@ import SettingsManagement from './components/SettingsManagement';
 import ApiManagement from './components/ApiManagement';
 import UserProfile from './components/UserProfile';
 import Login from './components/Login';
+import Register from './components/Register';
 import './App.css';
 
 function App() {
@@ -37,8 +38,10 @@ function App() {
     return (
       <Router>
         <Routes>
+          <Route path="/" element={<Login onLogin={handleLogin} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     );

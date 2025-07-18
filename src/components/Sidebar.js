@@ -30,12 +30,14 @@ const Sidebar = ({ user, onLogout }) => {
       
       <div className="user-info">
         <div className="user-id">
-          <label>아이디</label>
-          <span>{user.id}</span>
+          <span>{user.type}</span>
+          <div style={{ fontSize: '12px', color: 'white', marginTop: '2px' }}>
+            {user.id}
+          </div>
         </div>
         <div className="user-type">
           <button className="badge badge-clickable" onClick={handleUserProfileClick}>
-            {user.type}
+            내 정보
           </button>
           <button className="logout-button" onClick={onLogout}>
             로그아웃
