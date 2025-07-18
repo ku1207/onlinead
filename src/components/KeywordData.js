@@ -29,6 +29,7 @@ const KeywordData = () => {
   // 다운로드 관련 상태
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedDownloadItem, setSelectedDownloadItem] = useState('매체 합산 데이터');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
@@ -55,11 +56,13 @@ const KeywordData = () => {
 
   const handleDownloadConfirm = () => {
     // 다운로드 로직 (실제 구현 필요)
-    alert(`${selectedDownloadItem} 다운로드를 시작합니다.`);
     
     // 모달 닫기
     setShowDownloadModal(false);
     setSelectedDownloadItem('매체 합산 데이터');
+    
+    // 성공 모달 표시
+    setShowSuccessModal(true);
   };
 
   const handleDownloadCancel = () => {
@@ -213,6 +216,12 @@ const KeywordData = () => {
   // KPI 관련 함수들
   const calculateAchievementRate = (current, target) => {
     return ((current / target) * 100).toFixed(1);
+  };
+
+  // 달성률 색상 결정 함수
+  const getAchievementColor = (achievementRate) => {
+    const rate = parseFloat(achievementRate);
+    return rate >= 100 ? '#22c55e' : '#ef4444'; // 100% 이상이면 녹색, 미만이면 빨간색
   };
 
   const handleKpiSave = () => {
@@ -658,10 +667,10 @@ const KeywordData = () => {
   };
 
   return (
-    <div style={{ width: '85%', margin: '0 auto', padding: '20px 0' }}>
+    <div style={{ padding: '20px' }}>
       <ScrollbarStyle />
       
-      <div className="content-header" style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>매체 합산 데이터</h1>
         <button 
           className="download-button"
@@ -1640,7 +1649,7 @@ const KeywordData = () => {
               transformOrigin: 'bottom right'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ margin: 0, color: '#007bff', fontSize: '18px' }}>KPI 달성률</h3>
+                <h3 style={{ margin: 0, color: '#000000', fontSize: '18px' }}>KPI 달성률</h3>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {isEditingKpi ? (
                     <>
@@ -1693,10 +1702,9 @@ const KeywordData = () => {
                     onClick={() => setShowKpiExpanded(false)}
                     style={{
                       padding: '6px 8px',
-                      backgroundColor: '#dc3545',
-                      color: 'white',
+                      backgroundColor: 'transparent',
+                      color: '#dc3545',
                       border: 'none',
-                      borderRadius: '50%',
                       cursor: 'pointer',
                       fontSize: '14px',
                       width: '28px',
@@ -1746,7 +1754,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {formatNumber(summaryData.thisMonthSpend)}원
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)) }}>
                         달성률: {calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)}%
                       </div>
                     </div>
@@ -1776,7 +1784,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {formatNumber(summaryData.thisMonthConversions)}건
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)) }}>
                         달성률: {calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)}%
                       </div>
                     </div>
@@ -1806,7 +1814,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {formatNumber(summaryData.thisMonthCPA)}원
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)) }}>
                         달성률: {calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)}%
                       </div>
                     </div>
@@ -1836,7 +1844,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {summaryData.thisMonthCVR}%
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)) }}>
                         달성률: {calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)}%
                       </div>
                     </div>
@@ -1866,7 +1874,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {formatNumber(summaryData.thisMonthImpressions)}회
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)) }}>
                         달성률: {calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)}%
                       </div>
                     </div>
@@ -1896,7 +1904,7 @@ const KeywordData = () => {
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                         {formatNumber(summaryData.thisMonthClicks)}회
                       </div>
-                      <div style={{ fontSize: '11px', color: '#28a745' }}>
+                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)) }}>
                         달성률: {calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)}%
                       </div>
                     </div>
@@ -1936,6 +1944,26 @@ const KeywordData = () => {
           )}
         </div>
       </>
+
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>다운로드 완료</h3>
+            <div className="modal-content">
+              <p>다운로드가 완료되었습니다.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="save-button"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

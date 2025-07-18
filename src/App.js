@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import KeywordData from './components/KeywordData';
 import SettingsManagement from './components/SettingsManagement';
 import ApiManagement from './components/ApiManagement';
+import UserProfile from './components/UserProfile';
 import Login from './components/Login';
 import './App.css';
 
@@ -67,6 +68,7 @@ function App() {
                 <Navigate to="/keyword-data" />
               } 
             />
+            <Route path="/user-profile" element={<UserProfile user={user} />} />
             <Route path="/login" element={<Navigate to="/keyword-data" />} />
           </Routes>
         </div>

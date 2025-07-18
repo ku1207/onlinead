@@ -18,6 +18,10 @@ const Sidebar = ({ user, onLogout }) => {
     navigate(item.path);
   };
 
+  const handleUserProfileClick = () => {
+    navigate('/user-profile');
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -30,7 +34,9 @@ const Sidebar = ({ user, onLogout }) => {
           <span>{user.id}</span>
         </div>
         <div className="user-type">
-          <span className="badge">{user.type}</span>
+          <button className="badge badge-clickable" onClick={handleUserProfileClick}>
+            {user.type}
+          </button>
           <button className="logout-button" onClick={onLogout}>
             로그아웃
           </button>

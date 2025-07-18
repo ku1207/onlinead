@@ -15,6 +15,8 @@ const SettingsManagement = () => {
   const [editingMember, setEditingMember] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // 광고주 관리 상태
   const [advertisers, setAdvertisers] = useState([
@@ -24,6 +26,11 @@ const SettingsManagement = () => {
       medias: [
         { id: 1, name: '네이버', active: true, key: 'naver_key_123' },
         { id: 2, name: '구글', active: false, key: 'google_key_456' }
+      ],
+      kpis: [
+        { id: 1, name: '광고비', active: true, period: '기준월', targetValue: '1000000' },
+        { id: 2, name: 'CPC', active: false, period: '기준월', targetValue: '500' },
+        { id: 3, name: '전환수', active: true, period: '기준월', targetValue: '100' }
       ]
     },
     {
@@ -31,6 +38,10 @@ const SettingsManagement = () => {
       name: 'B광고주',
       medias: [
         { id: 1, name: '카카오', active: true, key: 'kakao_key_789' }
+      ],
+      kpis: [
+        { id: 1, name: 'CPA', active: true, period: '기준월', targetValue: '5000' },
+        { id: 2, name: 'CVR', active: false, period: '기준월', targetValue: '2.5' }
       ]
     }
   ]);
@@ -40,8 +51,33 @@ const SettingsManagement = () => {
   const [showMediaManagementModal, setShowMediaManagementModal] = useState(false);
   const [currentAdvertiser, setCurrentAdvertiser] = useState(null);
   
+  // KPI 관리 모달 상태
+  const [showKpiManagementModal, setShowKpiManagementModal] = useState(false);
+  const [currentKpiAdvertiser, setCurrentKpiAdvertiser] = useState(null);
+  
   // 선택 가능한 매체 목록
   const mediaOptions = ['네이버', '카카오', '구글', '메타', '틱톡', 'GA'];
+  
+  // 선택 가능한 KPI 목록
+  const kpiOptions = ['광고비', 'CPC', '전환수', 'CPA', 'CVR', '노출수', '클릭수', 'CTR'];
+  
+  // 선택 가능한 기간 목록
+  const periodOptions = ['기준일', '전일', '최근 7일', '이전 7일', '기준월', '전월'];
+
+  // 지표별 단위 반환 함수
+  const getKpiUnit = (kpiName) => {
+    const unitMap = {
+      '광고비': '원',
+      'CPC': '원',
+      'CPA': '원',
+      '전환수': '건',
+      'CVR': '%',
+      'CTR': '%',
+      '노출수': '회',
+      '클릭수': '회'
+    };
+    return unitMap[kpiName] || '';
+  };
 
   // 회원 관리 함수들
   const handleEditMember = (member) => {
@@ -117,7 +153,8 @@ const SettingsManagement = () => {
     setEditingMember(null);
     setEditFormData({});
     setShowPassword(false);
-    alert('회원 정보가 성공적으로 수정되었습니다.');
+    setSuccessMessage('회원 정보가 성공적으로 수정되었습니다.');
+    setShowSuccessModal(true);
   };
 
   const handleFormChange = (field, value) => {
@@ -148,7 +185,8 @@ const SettingsManagement = () => {
       const newAdvertiser = {
         id: Date.now(),
         name: newAdvertiserName.trim(),
-        medias: []
+        medias: [],
+        kpis: []
       };
       setAdvertisers([...advertisers, newAdvertiser]);
       setNewAdvertiserName('');
@@ -159,6 +197,113 @@ const SettingsManagement = () => {
   const handleMediaManagement = (advertiser) => {
     setCurrentAdvertiser(advertiser);
     setShowMediaManagementModal(true);
+  };
+
+  const handleKpiManagement = (advertiser) => {
+    setCurrentKpiAdvertiser(advertiser);
+    setShowKpiManagementModal(true);
+  };
+
+  const handleAddKpiToAdvertiser = (advertiserId) => {
+    const newKpi = {
+      id: Date.now(),
+      name: '',
+      active: false,
+      period: '기준월',
+      targetValue: ''
+    };
+    
+    setAdvertisers(prev => prev.map(advertiser => {
+      if (advertiser.id === advertiserId) {
+        return {
+          ...advertiser,
+          kpis: [...(advertiser.kpis || []), newKpi]
+        };
+      }
+      return advertiser;
+    }));
+
+    setCurrentKpiAdvertiser(prev => ({
+      ...prev,
+      kpis: [...(prev.kpis || []), newKpi]
+    }));
+  };
+
+  const handleUpdateKpi = (kpiId, field, value) => {
+    // 목표값이 비어있으면 자동으로 OFF 처리
+    if (field === 'targetValue') {
+      // 숫자만 허용 (빈 값 또는 양수)
+      if (value !== '' && (isNaN(value) || parseFloat(value) < 0)) {
+        return;
+      }
+      
+      const shouldTurnOff = !value || value.trim().length === 0;
+      
+      setAdvertisers(prev => prev.map(advertiser => {
+        if (advertiser.id === currentKpiAdvertiser.id) {
+          return {
+            ...advertiser,
+            kpis: advertiser.kpis.map(k => 
+              k.id === kpiId ? { 
+                ...k, 
+                [field]: value,
+                active: shouldTurnOff ? false : k.active 
+              } : k
+            )
+          };
+        }
+        return advertiser;
+      }));
+
+      setCurrentKpiAdvertiser(prev => ({
+        ...prev,
+        kpis: prev.kpis.map(k => 
+          k.id === kpiId ? { 
+            ...k, 
+            [field]: value,
+            active: shouldTurnOff ? false : k.active 
+          } : k
+        )
+      }));
+    } else {
+      setAdvertisers(prev => prev.map(advertiser => {
+        if (advertiser.id === currentKpiAdvertiser.id) {
+          return {
+            ...advertiser,
+            kpis: advertiser.kpis.map(k => 
+              k.id === kpiId ? { ...k, [field]: value } : k
+            )
+          };
+        }
+        return advertiser;
+      }));
+
+      setCurrentKpiAdvertiser(prev => ({
+        ...prev,
+        kpis: prev.kpis.map(k => 
+          k.id === kpiId ? { ...k, [field]: value } : k
+        )
+      }));
+    }
+  };
+
+  const handleDeleteKpiFromAdvertiser = (kpiId) => {
+    if (window.confirm('정말로 이 지표를 삭제하시겠습니까?')) {
+      setAdvertisers(prev => prev.map(advertiser => {
+        if (advertiser.id === currentKpiAdvertiser.id) {
+          return {
+            ...advertiser,
+            kpis: advertiser.kpis.filter(k => k.id !== kpiId)
+          };
+        }
+        return advertiser;
+      }));
+
+      setCurrentKpiAdvertiser(prev => ({
+        ...prev,
+        kpis: prev.kpis.filter(k => k.id !== kpiId)
+      }));
+    }
   };
 
   const handleDeleteAdvertiser = (advertiserId) => {
@@ -263,6 +408,73 @@ const SettingsManagement = () => {
     }
   };
 
+  // 매체 이름을 CSS 클래스명으로 변환
+  const getMediaClassName = (mediaName) => {
+    const mediaMap = {
+      '네이버': 'naver',
+      '카카오': 'kakao',
+      '구글': 'google',
+      '메타': 'meta',
+      '틱톡': 'tiktok',
+      'GA': 'ga'
+    };
+    return mediaMap[mediaName] || 'default';
+  };
+
+  // 매체 도형 렌더링 함수
+  const renderMediaBadges = (medias) => {
+    if (!medias || medias.length === 0) {
+      return <div className="media-badges empty">-</div>;
+    }
+
+    // 매체 이름이 있는 것들만 필터링
+    const validMedias = medias.filter(media => media.name && media.name.trim() !== '');
+    
+    if (validMedias.length === 0) {
+      return <div className="media-badges empty">-</div>;
+    }
+
+    return (
+      <div className="media-badges">
+        {validMedias.map(media => (
+          <span
+            key={media.id}
+            className={`media-badge ${getMediaClassName(media.name)} ${!media.active ? 'inactive' : ''}`}
+          >
+            {media.name}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  // KPI 도형 렌더링 함수
+  const renderKpiBadges = (kpis) => {
+    if (!kpis || kpis.length === 0) {
+      return <div className="kpi-badges empty">-</div>;
+    }
+
+    // KPI 이름이 있는 것들만 필터링
+    const validKpis = kpis.filter(kpi => kpi.name && kpi.name.trim() !== '');
+    
+    if (validKpis.length === 0) {
+      return <div className="kpi-badges empty">-</div>;
+    }
+
+    return (
+      <div className="kpi-badges">
+        {validKpis.map(kpi => (
+          <span
+            key={kpi.id}
+            className={`kpi-badge ${!kpi.active ? 'inactive' : ''}`}
+          >
+            {kpi.name}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   const renderAdvertiserRows = () => {
     let rowNumber = 1;
     const rows = [];
@@ -272,13 +484,20 @@ const SettingsManagement = () => {
         <tr key={advertiser.id}>
           <td>{rowNumber++}</td>
           <td>{advertiser.name}</td>
-          <td>{advertiser.medias.map(media => media.name).join(', ') || '-'}</td>
+          <td>{renderMediaBadges(advertiser.medias)}</td>
+          <td>{renderKpiBadges(advertiser.kpis)}</td>
           <td>
             <button 
               className="media-management-button"
               onClick={() => handleMediaManagement(advertiser)}
             >
               매체 관리
+            </button>
+            <button 
+              className="kpi-management-button"
+              onClick={() => handleKpiManagement(advertiser)}
+            >
+              KPI 관리
             </button>
             <button 
               className="delete-button"
@@ -340,9 +559,11 @@ const SettingsManagement = () => {
                     <td>{member.username}</td>
                     <td>{member.name}</td>
                     <td>
-                      <span className={`badge ${member.type === '관리자' ? 'admin' : 'user'}`}>
+                      <div className="user-type-badges">
+                        <span className={`user-type-badge ${member.type === '관리자' ? 'admin' : 'user'}`}>
                         {member.type}
                       </span>
+                      </div>
                     </td>
                     <td>{member.email}</td>
                     <td>
@@ -393,6 +614,7 @@ const SettingsManagement = () => {
                   <th>No</th>
                   <th>광고주</th>
                   <th>매체</th>
+                  <th>KPI 설정 여부</th>
                   <th>관리</th>
                 </tr>
               </thead>
@@ -541,9 +763,13 @@ const SettingsManagement = () => {
       {/* 매체 관리 모달 */}
       {showMediaManagementModal && currentAdvertiser && (
         <div className="modal-overlay">
-          <div className="modal media-management-modal">
+          <div className="modal media-management-modal" style={{ width: '800px', maxWidth: '95%', minWidth: '600px' }}>
             <h3>{currentAdvertiser.name} - 매체 관리</h3>
             <div className="modal-content">
+              <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>현재 매체 상태</h4>
+                {renderMediaBadges(currentAdvertiser.medias)}
+              </div>
               <table className="media-management-table">
                 <thead>
                   <tr>
@@ -615,6 +841,131 @@ const SettingsManagement = () => {
                 }}
               >
                 닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* KPI 관리 모달 */}
+      {showKpiManagementModal && currentKpiAdvertiser && (
+        <div className="modal-overlay">
+          <div className="modal media-management-modal" style={{ width: '800px', maxWidth: '95%', minWidth: '600px' }}>
+            <h3>{currentKpiAdvertiser.name} - KPI 관리</h3>
+            <div className="modal-content">
+              <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>현재 KPI 상태</h4>
+                {renderKpiBadges(currentKpiAdvertiser.kpis)}
+              </div>
+              <table className="media-management-table">
+                <thead>
+                  <tr>
+                    <th>지표</th>
+                    <th>활성화</th>
+                    <th>기간</th>
+                    <th>목표값</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentKpiAdvertiser.kpis.map(kpi => (
+                    <tr key={kpi.id}>
+                      <td>
+                        <select
+                          value={kpi.name}
+                          onChange={(e) => handleUpdateKpi(kpi.id, 'name', e.target.value)}
+                        >
+                          <option value="">지표 선택</option>
+                          {kpiOptions.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            checked={kpi.active}
+                            onChange={() => handleUpdateKpi(kpi.id, 'active', !kpi.active)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </td>
+                      <td>
+                        <select
+                          value={kpi.period || '기준월'}
+                          onChange={(e) => handleUpdateKpi(kpi.id, 'period', e.target.value)}
+                        >
+                          {periodOptions.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <div className="target-value-container">
+                          <input
+                            type="number"
+                            value={kpi.targetValue || ''}
+                            onChange={(e) => handleUpdateKpi(kpi.id, 'targetValue', e.target.value)}
+                            placeholder="목표값을 입력하세요"
+                            min="0"
+                            step="0.01"
+                          />
+                          {kpi.name && (
+                            <span className="unit-label">{getKpiUnit(kpi.name)}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <button 
+                          className="delete-button"
+                          onClick={() => handleDeleteKpiFromAdvertiser(kpi.id)}
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="media-table-actions">
+                <button 
+                  className="add-media-button"
+                  onClick={() => handleAddKpiToAdvertiser(currentKpiAdvertiser.id)}
+                >
+                  + 지표 추가
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={() => {
+                  setShowKpiManagementModal(false);
+                  setCurrentKpiAdvertiser(null);
+                }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>저장 완료</h3>
+            <div className="modal-content">
+              <p>{successMessage}</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="save-button"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                확인
               </button>
             </div>
           </div>

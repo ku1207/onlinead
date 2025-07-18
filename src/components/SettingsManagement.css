@@ -1,19 +1,18 @@
 .settings-management {
   padding: 20px;
-  background-color: #f5f5f5;
   min-height: 100vh;
 }
 
 .settings-header {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .settings-header h2 {
   margin: 0;
   color: #333;
-  font-size: 24px;
+  font-size: 28px;
 }
 
 /* 탭 내비게이션 */
@@ -71,10 +70,13 @@
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
   transition: background-color 0.3s;
 }
 
@@ -100,9 +102,37 @@
 .member-table td,
 .advertiser-table th,
 .advertiser-table td {
-  padding: 12px;
+  padding: 15px 12px;
   text-align: center;
   border-bottom: 1px solid #ddd;
+  line-height: 1.4;
+}
+
+.advertiser-table th:nth-child(1),
+.advertiser-table td:nth-child(1) {
+  width: 60px;
+}
+
+.advertiser-table th:nth-child(2),
+.advertiser-table td:nth-child(2) {
+  width: 150px;
+}
+
+.advertiser-table th:nth-child(3),
+.advertiser-table td:nth-child(3) {
+  width: 250px;
+  min-width: 250px;
+}
+
+.advertiser-table th:nth-child(4),
+.advertiser-table td:nth-child(4) {
+  width: 250px;
+  min-width: 250px;
+}
+
+.advertiser-table th:nth-child(5),
+.advertiser-table td:nth-child(5) {
+  width: 280px;
 }
 
 .member-table th,
@@ -141,11 +171,13 @@
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  margin-right: 8px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
   transition: background-color 0.3s;
 }
 
@@ -157,11 +189,13 @@
   background-color: #dc3545;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  margin-left: 8px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
   transition: background-color 0.3s;
 }
 
@@ -293,18 +327,37 @@ input:checked + .slider:before {
 }
 
 .media-management-button {
-  background-color: #17a2b8;
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  margin-right: 8px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
 }
 
 .media-management-button:hover {
-  background-color: #138496;
+  background-color: #0056b3;
+}
+
+.kpi-management-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
+}
+
+.kpi-management-button:hover {
+  background-color: #0056b3;
 }
 
 /* 모달 스타일 */
@@ -444,10 +497,13 @@ input:checked + .slider:before {
   background-color: #6c757d;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
 }
 
 .cancel-button:hover {
@@ -458,10 +514,13 @@ input:checked + .slider:before {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
 }
 
 .save-button:hover {
@@ -469,9 +528,10 @@ input:checked + .slider:before {
 }
 
 /* 매체 관리 모달 스타일 */
-.media-management-modal {
-  width: 900px;
-  max-width: 95%;
+.modal.media-management-modal {
+  width: 800px !important;
+  max-width: 95% !important;
+  min-width: 600px !important;
 }
 
 .media-management-table {
@@ -528,6 +588,10 @@ input:checked + .slider:before {
 
 .media-management-table .switch {
   transform: scale(0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }
 
 .media-table-actions {
@@ -542,11 +606,14 @@ input:checked + .slider:before {
   background-color: #28a745;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
+  min-width: 90px;
+  height: 32px;
+  margin: 4px;
 }
 
 .media-table-actions .add-media-button:hover {
@@ -566,4 +633,224 @@ input:checked + .slider:before {
 
 .media-management-table .delete-button:hover {
   background-color: #c82333;
+} 
+
+/* 매체 도형 스타일 */
+.media-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px;
+}
+
+.media-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 60px;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+/* 매체별 기본 색상 */
+.media-badge.naver {
+  background-color: #03c75a;
+}
+
+.media-badge.kakao {
+  background-color: #fee500;
+  color: #000;
+}
+
+.media-badge.google {
+  background-color: #4285f4;
+}
+
+.media-badge.meta {
+  background-color: #0866ff;
+}
+
+.media-badge.tiktok {
+  background-color: #ff0050;
+}
+
+.media-badge.ga {
+  background-color: #ff8f00;
+}
+
+.media-badge.default {
+  background-color: #6c757d;
+}
+
+/* 매체 이름이 없는 경우 */
+.media-badge.empty-name {
+  background-color: #dee2e6;
+  color: #6c757d;
+  border: 1px dashed #adb5bd;
+}
+
+/* 비활성화된 매체 (회색) */
+.media-badge.inactive {
+  background-color: #6c757d !important;
+  color: white !important;
+}
+
+/* 빈 매체 표시 */
+.media-badges.empty {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 매체 관리 모달 내 매체 도형 */
+.modal .media-badges {
+  justify-content: flex-start;
+  padding: 4px 0;
+}
+
+.modal .media-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  height: 20px;
+  min-width: 50px;
+}
+
+/* KPI 도형 스타일 */
+.kpi-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px;
+}
+
+.kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 60px;
+  height: 24px;
+  box-sizing: border-box;
+  background-color: #6f42c1;
+}
+
+/* KPI 비활성화된 상태 (회색) */
+.kpi-badge.inactive {
+  background-color: #6c757d !important;
+  color: white !important;
+}
+
+/* 빈 KPI 표시 */
+.kpi-badges.empty {
+  color: #999;
+  font-size: 14px;
+}
+
+/* KPI 관리 모달 내 KPI 도형 */
+.modal .kpi-badges {
+  justify-content: flex-start;
+  padding: 4px 0;
+}
+
+.modal .kpi-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  height: 20px;
+  min-width: 50px;
+}
+
+/* 회원 관리 테이블 권한 도형 스타일 */
+.user-type-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px;
+}
+
+.user-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 60px;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+.user-type-badge.admin {
+  background-color: #dc3545;
+}
+
+.user-type-badge.user {
+  background-color: #28a745;
+}
+
+/* 목표값 입력 컨테이너 스타일 */
+.target-value-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.target-value-container input {
+  flex: 1;
+  padding-right: 35px;
+  box-sizing: border-box;
+}
+
+.target-value-container input:focus {
+  outline: none;
+  border-color: #6f42c1;
+  box-shadow: 0 0 0 2px rgba(111, 66, 193, 0.25);
+}
+
+/* number input 스핀 버튼 제거 */
+.target-value-container input[type="number"]::-webkit-outer-spin-button,
+.target-value-container input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.target-value-container input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.unit-label {
+  position: absolute;
+  right: 10px;
+  font-size: 14px;
+  color: #495057;
+  font-weight: 600;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
 } 
