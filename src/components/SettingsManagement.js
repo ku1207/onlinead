@@ -502,25 +502,29 @@ const SettingsManagement = () => {
     return mediaMap[mediaName] || 'default';
   };
 
-  // 매체 도형 렌더링 함수
+  // 매체 도형 렌더링 함수 (활성화된 매체만 표시)
   const renderMediaBadges = (medias) => {
     if (!medias || medias.length === 0) {
       return <div className="media-badges empty">-</div>;
     }
 
-    // 매체 이름이 있는 것들만 필터링
-    const validMedias = medias.filter(media => media.name && media.name.trim() !== '');
+    // 활성화되고 매체 이름이 있는 것들만 필터링
+    const activeMedias = medias.filter(media => 
+      media.active && 
+      media.name && 
+      media.name.trim() !== ''
+    );
     
-    if (validMedias.length === 0) {
+    if (activeMedias.length === 0) {
       return <div className="media-badges empty">-</div>;
     }
 
     return (
       <div className="media-badges">
-        {validMedias.map(media => (
+        {activeMedias.map(media => (
           <span
             key={media.id}
-            className={`media-badge ${getMediaClassName(media.name)} ${!media.active ? 'inactive' : ''}`}
+            className={`media-badge ${getMediaClassName(media.name)}`}
           >
             {media.name}
           </span>
@@ -529,19 +533,25 @@ const SettingsManagement = () => {
     );
   };
 
-  // KPI 도형 렌더링 함수 (활성화된 KPI만 표시, 매체별 색상 적용)
-  const renderKpiBadges = (kpis) => {
+  // KPI 도형 렌더링 함수 (활성화된 매체의 활성화된 KPI만 표시, 매체별 색상 적용)
+  const renderKpiBadges = (kpis, medias) => {
     if (!kpis || kpis.length === 0) {
       return <div className="kpi-badges empty">-</div>;
     }
 
-    // 활성화되고 KPI 이름이 있는 것들만 필터링
+    // 활성화된 매체 목록 생성
+    const activeMediaNames = medias ? medias
+      .filter(media => media.active && media.name && media.name.trim() !== '')
+      .map(media => media.name) : [];
+
+    // 활성화되고, KPI 이름이 있고, 해당 매체가 활성화된 것들만 필터링
     const activeKpis = kpis.filter(kpi => 
       kpi.active && 
       kpi.name && 
       kpi.name.trim() !== '' && 
       kpi.mediaName && 
-      kpi.mediaName.trim() !== ''
+      kpi.mediaName.trim() !== '' &&
+      activeMediaNames.includes(kpi.mediaName)
     );
     
     if (activeKpis.length === 0) {
@@ -573,7 +583,7 @@ const SettingsManagement = () => {
           <td>{rowNumber++}</td>
           <td>{advertiser.name}</td>
           <td>{renderMediaBadges(advertiser.medias)}</td>
-          <td>{renderKpiBadges(advertiser.kpis)}</td>
+          <td>{renderKpiBadges(advertiser.kpis, advertiser.medias)}</td>
           <td>
             <button 
               className="media-management-button"
@@ -983,7 +993,8 @@ const SettingsManagement = () => {
                       {selectedMediaForKpi} - 현재 KPI 상태
                     </h4>
                     {renderKpiBadges(
-                      currentKpiAdvertiser.kpis.filter(kpi => kpi.mediaName === selectedMediaForKpi)
+                      currentKpiAdvertiser.kpis.filter(kpi => kpi.mediaName === selectedMediaForKpi),
+                      currentKpiAdvertiser.medias
                     )}
                   </div>
                   <table className="media-management-table">
