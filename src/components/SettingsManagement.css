@@ -753,6 +753,37 @@ input:checked + .slider:before {
   height: 24px;
   box-sizing: border-box;
   background-color: #6f42c1;
+  cursor: help;
+}
+
+/* KPI 배지의 매체별 색상 적용 */
+.kpi-badge.naver {
+  background-color: #03c75a;
+}
+
+.kpi-badge.kakao {
+  background-color: #fee500;
+  color: #000;
+}
+
+.kpi-badge.google {
+  background-color: #4285f4;
+}
+
+.kpi-badge.meta {
+  background-color: #0866ff;
+}
+
+.kpi-badge.tiktok {
+  background-color: #ff0050;
+}
+
+.kpi-badge.ga {
+  background-color: #ff8f00;
+}
+
+.kpi-badge.default {
+  background-color: #6c757d;
 }
 
 /* KPI 비활성화된 상태 (회색) */

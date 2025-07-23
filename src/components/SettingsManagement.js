@@ -529,25 +529,32 @@ const SettingsManagement = () => {
     );
   };
 
-  // KPI 도형 렌더링 함수
+  // KPI 도형 렌더링 함수 (활성화된 KPI만 표시, 매체별 색상 적용)
   const renderKpiBadges = (kpis) => {
     if (!kpis || kpis.length === 0) {
       return <div className="kpi-badges empty">-</div>;
     }
 
-    // KPI 이름이 있는 것들만 필터링
-    const validKpis = kpis.filter(kpi => kpi.name && kpi.name.trim() !== '');
+    // 활성화되고 KPI 이름이 있는 것들만 필터링
+    const activeKpis = kpis.filter(kpi => 
+      kpi.active && 
+      kpi.name && 
+      kpi.name.trim() !== '' && 
+      kpi.mediaName && 
+      kpi.mediaName.trim() !== ''
+    );
     
-    if (validKpis.length === 0) {
+    if (activeKpis.length === 0) {
       return <div className="kpi-badges empty">-</div>;
     }
 
     return (
       <div className="kpi-badges">
-        {validKpis.map(kpi => (
+        {activeKpis.map(kpi => (
           <span
             key={kpi.id}
-            className={`kpi-badge ${!kpi.active ? 'inactive' : ''}`}
+            className={`kpi-badge ${getMediaClassName(kpi.mediaName)}`}
+            title={`${kpi.mediaName} - ${kpi.name}`}
           >
             {kpi.name}
           </span>
