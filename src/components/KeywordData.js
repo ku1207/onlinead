@@ -40,8 +40,16 @@ const KeywordData = () => {
   
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
-  const [selectedKpiMedia, setSelectedKpiMedia] = useState('네이버'); // 선택된 매체
+  const [selectedKpiMedia, setSelectedKpiMedia] = useState('전체'); // 전체를 기본값으로 변경
   const [kpiTargets, setKpiTargets] = useState({
+    전체: {
+      spend: 8300000, // 모든 매체 합계
+      conversion: 420, // 모든 매체 합계
+      cpa: 19762, // 전체 광고비 / 전체 전환수 (8300000 / 420)
+      cvr: 3.1, // 전체 전환수 / 전체 클릭수 * 100 (420 / 27500 * 100)
+      impressions: 1550000, // 모든 매체 합계
+      clicks: 27500 // 모든 매체 합계
+    },
     네이버: {
       spend: 3000000,
       conversion: 150,
@@ -1928,6 +1936,26 @@ const KeywordData = () => {
                 overflowX: 'auto',
                 gap: '5px'
               }}>
+                {/* 전체 탭 */}
+                <button
+                  onClick={() => setSelectedKpiMedia('전체')}
+                  style={{
+                    background: selectedKpiMedia === '전체' ? '#007bff' : 'transparent',
+                    color: selectedKpiMedia === '전체' ? 'white' : '#666',
+                    border: 'none',
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: selectedKpiMedia === '전체' ? '600' : '400',
+                    borderRadius: '8px',
+                    transition: 'all 0.3s ease',
+                    whiteSpace: 'nowrap',
+                    minWidth: 'fit-content'
+                  }}
+                >
+                  전체
+                </button>
+                {/* 매체별 탭들 */}
                 {filters.platforms.map(platform => (
                   <button
                     key={platform}
@@ -1965,7 +1993,7 @@ const KeywordData = () => {
                       textAlign: 'center'
                     }}>
                       <h4 style={{ margin: 0, fontSize: '14px', color: '#333' }}>
-                        {selectedKpiMedia} KPI 달성률
+                        {selectedKpiMedia === '전체' ? '전체 매체' : selectedKpiMedia} KPI 달성률
                       </h4>
                     </div>
                     
