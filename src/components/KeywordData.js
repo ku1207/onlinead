@@ -357,9 +357,40 @@ const KeywordData = () => {
     return num.toLocaleString('ko-KR');
   };
 
-  // KPI 관련 함수들
+  // KPI 관련 함수들 (NaN/infinity 방지)
   const calculateAchievementRate = (current, target) => {
-    return ((current / target) * 100).toFixed(1);
+    // 입력값 유효성 검사
+    if (!current || !target || 
+        isNaN(current) || isNaN(target) || 
+        !isFinite(current) || !isFinite(target) ||
+        target === 0) {
+      return '0.0';
+    }
+    
+    const rate = (current / target) * 100;
+    
+    // 결과값 유효성 검사
+    if (isNaN(rate) || !isFinite(rate)) {
+      return '0.0';
+    }
+    
+    return rate.toFixed(1);
+  };
+
+  // 안전한 숫자값 반환 함수
+  const getSafeNumber = (value, defaultValue = 0) => {
+    if (value == null || isNaN(value) || !isFinite(value)) {
+      return defaultValue;
+    }
+    return value;
+  };
+
+  // 안전한 문자열 숫자값 반환 함수 (CVR 등에 사용)
+  const getSafeStringNumber = (value, defaultValue = '0.0') => {
+    if (value == null || isNaN(parseFloat(value)) || !isFinite(parseFloat(value))) {
+      return defaultValue;
+    }
+    return value;
   };
 
   // 달성률 색상 결정 함수
@@ -808,14 +839,19 @@ const KeywordData = () => {
       clicks: 0
     };
 
-    // 각 매체별 데이터를 합산
+    // 각 매체별 데이터를 합산 (안전한 계산)
     platforms.forEach(platform => {
       if (kpiTargets[platform]) {
         // 각 매체별로 현재 달성 수치 계산 (랜덤 요소 적용)
-        const mediaSpend = Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25);
-        const mediaConversion = Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15);
-        const mediaImpressions = Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20);
-        const mediaClicks = Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18);
+        const baseSpend = getSafeNumber(summaryData.thisMonthSpend);
+        const baseConversion = getSafeNumber(summaryData.thisMonthConversions);
+        const baseImpressions = getSafeNumber(summaryData.thisMonthImpressions);
+        const baseClicks = getSafeNumber(summaryData.thisMonthClicks);
+        
+        const mediaSpend = Math.floor(baseSpend * Math.random() * 0.5 + baseSpend * 0.25);
+        const mediaConversion = Math.floor(baseConversion * Math.random() * 0.5 + baseConversion * 0.15);
+        const mediaImpressions = Math.floor(baseImpressions * Math.random() * 0.5 + baseImpressions * 0.20);
+        const mediaClicks = Math.floor(baseClicks * Math.random() * 0.5 + baseClicks * 0.18);
         
         totalData.spend += mediaSpend;
         totalData.conversion += mediaConversion;
@@ -824,9 +860,16 @@ const KeywordData = () => {
       }
     });
 
-    // 계산된 지표들
-    totalData.cpa = totalData.conversion > 0 ? Math.floor(totalData.spend / totalData.conversion) : 0;
-    totalData.cvr = totalData.clicks > 0 ? ((totalData.conversion / totalData.clicks) * 100).toFixed(1) : '0.0';
+    // 계산된 지표들 (안전한 계산)
+    totalData.cpa = (totalData.conversion > 0 && isFinite(totalData.spend) && isFinite(totalData.conversion)) 
+      ? Math.floor(totalData.spend / totalData.conversion) : 0;
+    
+    if (totalData.clicks > 0 && isFinite(totalData.conversion) && isFinite(totalData.clicks)) {
+      const cvrValue = (totalData.conversion / totalData.clicks) * 100;
+      totalData.cvr = isFinite(cvrValue) ? cvrValue.toFixed(1) : '0.0';
+    } else {
+      totalData.cvr = '0.0';
+    }
 
     return totalData;
   };
@@ -2043,12 +2086,12 @@ const KeywordData = () => {
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
-                            formatNumber(totalData.spend) : 
-                            formatNumber(Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25))
+                            formatNumber(getSafeNumber(totalData.spend)) : 
+                            formatNumber(Math.floor(getSafeNumber(summaryData.thisMonthSpend) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthSpend) * 0.25))
                           }원
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? totalData.spend : Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25), mediaKpiTargets.spend)) }}>
-                          달성률: {calculateAchievementRate(isTotal && totalData ? totalData.spend : Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25), mediaKpiTargets.spend)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.spend) : Math.floor(getSafeNumber(summaryData.thisMonthSpend) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthSpend) * 0.25), mediaKpiTargets.spend)) }}>
+                          달성률: {calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.spend) : Math.floor(getSafeNumber(summaryData.thisMonthSpend) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthSpend) * 0.25), mediaKpiTargets.spend)}%
                         </div>
                       </div>
 
@@ -2068,11 +2111,11 @@ const KeywordData = () => {
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
                             formatNumber(totalData.conversion) : 
-                            formatNumber(Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15))
+                            formatNumber(Math.floor((summaryData.thisMonthConversions || 0) * Math.random() * 0.5 + (summaryData.thisMonthConversions || 0) * 0.15))
                           }건
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? totalData.conversion : Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15), mediaKpiTargets.conversion)) }}>
-                          달성률: {calculateAchievementRate(isTotal && totalData ? totalData.conversion : Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15), mediaKpiTargets.conversion)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? totalData.conversion : Math.floor((summaryData.thisMonthConversions || 0) * Math.random() * 0.5 + (summaryData.thisMonthConversions || 0) * 0.15), mediaKpiTargets.conversion)) }}>
+                          달성률: {calculateAchievementRate(isTotal && totalData ? totalData.conversion : Math.floor((summaryData.thisMonthConversions || 0) * Math.random() * 0.5 + (summaryData.thisMonthConversions || 0) * 0.15), mediaKpiTargets.conversion)}%
                         </div>
                       </div>
 
@@ -2091,12 +2134,12 @@ const KeywordData = () => {
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
-                            formatNumber(totalData.cpa) : 
-                            formatNumber(summaryData.thisMonthCPA)
+                            formatNumber(getSafeNumber(totalData.cpa)) : 
+                            formatNumber(getSafeNumber(summaryData.thisMonthCPA))
                           }원
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(mediaKpiTargets.cpa, isTotal && totalData ? totalData.cpa : summaryData.thisMonthCPA)) }}>
-                          달성률: {calculateAchievementRate(mediaKpiTargets.cpa, isTotal && totalData ? totalData.cpa : summaryData.thisMonthCPA)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(mediaKpiTargets.cpa, isTotal && totalData ? getSafeNumber(totalData.cpa) : getSafeNumber(summaryData.thisMonthCPA))) }}>
+                          달성률: {calculateAchievementRate(mediaKpiTargets.cpa, isTotal && totalData ? getSafeNumber(totalData.cpa) : getSafeNumber(summaryData.thisMonthCPA))}%
                         </div>
                       </div>
 
@@ -2110,17 +2153,17 @@ const KeywordData = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                           <h4 style={{ margin: 0, fontSize: '14px' }}>CVR</h4>
                           <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                            목표값: {mediaKpiTargets.cvr.toFixed(1)}%
+                            목표값: {getSafeNumber(mediaKpiTargets.cvr, 0).toFixed(1)}%
                           </span>
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
-                            parseFloat(totalData.cvr).toFixed(1) : 
-                            parseFloat(summaryData.thisMonthCVR).toFixed(1)
+                            getSafeStringNumber(totalData.cvr) : 
+                            getSafeStringNumber(summaryData.thisMonthCVR)
                           }%
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? parseFloat(totalData.cvr) : parseFloat(summaryData.thisMonthCVR), mediaKpiTargets.cvr)) }}>
-                          달성률: {calculateAchievementRate(isTotal && totalData ? parseFloat(totalData.cvr) : parseFloat(summaryData.thisMonthCVR), mediaKpiTargets.cvr)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? parseFloat(getSafeStringNumber(totalData.cvr)) : parseFloat(getSafeStringNumber(summaryData.thisMonthCVR)), mediaKpiTargets.cvr)) }}>
+                          달성률: {calculateAchievementRate(isTotal && totalData ? parseFloat(getSafeStringNumber(totalData.cvr)) : parseFloat(getSafeStringNumber(summaryData.thisMonthCVR)), mediaKpiTargets.cvr)}%
                         </div>
                       </div>
 
@@ -2139,12 +2182,12 @@ const KeywordData = () => {
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
-                            formatNumber(totalData.impressions) : 
-                            formatNumber(Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20))
+                            formatNumber(getSafeNumber(totalData.impressions)) : 
+                            formatNumber(Math.floor(getSafeNumber(summaryData.thisMonthImpressions) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthImpressions) * 0.20))
                           }회
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? totalData.impressions : Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20), mediaKpiTargets.impressions)) }}>
-                          달성률: {calculateAchievementRate(isTotal && totalData ? totalData.impressions : Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20), mediaKpiTargets.impressions)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.impressions) : Math.floor(getSafeNumber(summaryData.thisMonthImpressions) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthImpressions) * 0.20), mediaKpiTargets.impressions)) }}>
+                          달성률: {calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.impressions) : Math.floor(getSafeNumber(summaryData.thisMonthImpressions) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthImpressions) * 0.20), mediaKpiTargets.impressions)}%
                         </div>
                       </div>
 
@@ -2163,12 +2206,12 @@ const KeywordData = () => {
                         </div>
                         <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
                           {isTotal && totalData ? 
-                            formatNumber(totalData.clicks) : 
-                            formatNumber(Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18))
+                            formatNumber(getSafeNumber(totalData.clicks)) : 
+                            formatNumber(Math.floor(getSafeNumber(summaryData.thisMonthClicks) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthClicks) * 0.18))
                           }회
                         </div>
-                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? totalData.clicks : Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18), mediaKpiTargets.clicks)) }}>
-                          달성률: {calculateAchievementRate(isTotal && totalData ? totalData.clicks : Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18), mediaKpiTargets.clicks)}%
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.clicks) : Math.floor(getSafeNumber(summaryData.thisMonthClicks) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthClicks) * 0.18), mediaKpiTargets.clicks)) }}>
+                          달성률: {calculateAchievementRate(isTotal && totalData ? getSafeNumber(totalData.clicks) : Math.floor(getSafeNumber(summaryData.thisMonthClicks) * Math.random() * 0.5 + getSafeNumber(summaryData.thisMonthClicks) * 0.18), mediaKpiTargets.clicks)}%
                         </div>
                       </div>
                     </div>
