@@ -40,13 +40,48 @@ const KeywordData = () => {
   
   // KPI 관련 상태
   const [showKpiExpanded, setShowKpiExpanded] = useState(false);
+  const [selectedKpiMedia, setSelectedKpiMedia] = useState('네이버'); // 선택된 매체
   const [kpiTargets, setKpiTargets] = useState({
-    spend: 5000000,
-    conversion: 300,
-    cpa: 10000,
-    cvr: 4.0,
-    impressions: 800000,
-    clicks: 15000
+    네이버: {
+      spend: 3000000,
+      conversion: 150,
+      cpa: 15000,
+      cvr: 3.5,
+      impressions: 500000,
+      clicks: 8000
+    },
+    카카오: {
+      spend: 2000000,
+      conversion: 100,
+      cpa: 12000,
+      cvr: 4.0,
+      impressions: 300000,
+      clicks: 5000
+    },
+    구글: {
+      spend: 1500000,
+      conversion: 80,
+      cpa: 18000,
+      cvr: 2.8,
+      impressions: 400000,
+      clicks: 6000
+    },
+    메타: {
+      spend: 1000000,
+      conversion: 50,
+      cpa: 20000,
+      cvr: 2.5,
+      impressions: 200000,
+      clicks: 3000
+    },
+    틱톡: {
+      spend: 800000,
+      conversion: 40,
+      cpa: 20000,
+      cvr: 3.0,
+      impressions: 150000,
+      clicks: 2500
+    }
   });
   
   // 스크롤 동기화를 위한 ref들
@@ -1856,7 +1891,7 @@ const KeywordData = () => {
               backgroundColor: 'white',
               borderRadius: '20px',
               padding: '25px',
-              width: '400px',
+              width: '450px',
               maxHeight: '80vh',
               overflow: 'auto',
               boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
@@ -1885,139 +1920,184 @@ const KeywordData = () => {
                 </button>
               </div>
 
-              {(() => {
+              {/* 매체별 탭 네비게이션 */}
+              <div style={{ 
+                marginBottom: '20px', 
+                borderBottom: '1px solid #e0e0e0',
+                display: 'flex',
+                overflowX: 'auto',
+                gap: '5px'
+              }}>
+                {filters.platforms.map(platform => (
+                  <button
+                    key={platform}
+                    onClick={() => setSelectedKpiMedia(platform)}
+                    style={{
+                      background: selectedKpiMedia === platform ? '#007bff' : 'transparent',
+                      color: selectedKpiMedia === platform ? 'white' : '#666',
+                      border: 'none',
+                      padding: '8px 12px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: selectedKpiMedia === platform ? '600' : '400',
+                      borderRadius: '8px',
+                      transition: 'all 0.3s ease',
+                      whiteSpace: 'nowrap',
+                      minWidth: 'fit-content'
+                    }}
+                  >
+                    {platform}
+                  </button>
+                ))}
+              </div>
+
+              {getSummaryData() && kpiTargets[selectedKpiMedia] && (() => {
                 const summaryData = getSummaryData();
-                if (!summaryData) return null;
+                const mediaKpiTargets = kpiTargets[selectedKpiMedia];
 
                 return (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px'
-                  }}>
-                    {/* 광고비 카드 */}
+                  <div>
                     <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
+                      marginBottom: '15px',
+                      padding: '10px',
+                      backgroundColor: '#e7f1ff',
+                      borderRadius: '8px',
+                      textAlign: 'center'
                     }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>광고비</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {formatNumber(kpiTargets.spend)}원
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthSpend)}원
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)) }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthSpend, kpiTargets.spend)}%
-                      </div>
+                      <h4 style={{ margin: 0, fontSize: '14px', color: '#333' }}>
+                        {selectedKpiMedia} KPI 달성률
+                      </h4>
                     </div>
-
-                    {/* 전환수 카드 */}
+                    
                     <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px'
                     }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>전환수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {formatNumber(kpiTargets.conversion)}건
-                        </span>
+                      {/* 광고비 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>광고비</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {formatNumber(mediaKpiTargets.spend)}원
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {formatNumber(Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25))}원
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25), mediaKpiTargets.spend)) }}>
+                          달성률: {calculateAchievementRate(Math.floor(summaryData.thisMonthSpend * Math.random() * 0.5 + summaryData.thisMonthSpend * 0.25), mediaKpiTargets.spend)}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthConversions)}건
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)) }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthConversions, kpiTargets.conversion)}%
-                      </div>
-                    </div>
 
-                    {/* CPA 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>CPA</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {formatNumber(kpiTargets.cpa)}원
-                        </span>
+                      {/* 전환수 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>전환수</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {formatNumber(mediaKpiTargets.conversion)}건
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {formatNumber(Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15))}건
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15), mediaKpiTargets.conversion)) }}>
+                          달성률: {calculateAchievementRate(Math.floor(summaryData.thisMonthConversion * Math.random() * 0.5 + summaryData.thisMonthConversion * 0.15), mediaKpiTargets.conversion)}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthCPA)}원
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)) }}>
-                        달성률: {calculateAchievementRate(kpiTargets.cpa, summaryData.thisMonthCPA)}%
-                      </div>
-                    </div>
 
-                    {/* CVR 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>CVR</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {kpiTargets.cvr}%
-                        </span>
+                      {/* CPA 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>CPA</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {formatNumber(mediaKpiTargets.cpa)}원
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {formatNumber(summaryData.thisMonthCPA)}원
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(mediaKpiTargets.cpa, summaryData.thisMonthCPA)) }}>
+                          달성률: {calculateAchievementRate(mediaKpiTargets.cpa, summaryData.thisMonthCPA)}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {summaryData.thisMonthCVR}%
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)) }}>
-                        달성률: {calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), kpiTargets.cvr)}%
-                      </div>
-                    </div>
 
-                    {/* 노출수 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>노출수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {formatNumber(kpiTargets.impressions)}회
-                        </span>
+                      {/* CVR 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>CVR</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {mediaKpiTargets.cvr.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {parseFloat(summaryData.thisMonthCVR).toFixed(1)}%
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), mediaKpiTargets.cvr)) }}>
+                          달성률: {calculateAchievementRate(parseFloat(summaryData.thisMonthCVR), mediaKpiTargets.cvr)}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthImpressions)}회
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)) }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthImpressions, kpiTargets.impressions)}%
-                      </div>
-                    </div>
 
-                    {/* 클릭수 카드 */}
-                    <div style={{
-                      border: '1px solid #dee2e6',
-                      borderRadius: '10px',
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px' }}>클릭수</h4>
-                        <span style={{ fontSize: '10px', color: '#6c757d' }}>
-                          목표값: {formatNumber(kpiTargets.clicks)}회
-                        </span>
+                      {/* 노출수 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>노출수</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {formatNumber(mediaKpiTargets.impressions)}회
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {formatNumber(Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20))}회
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20), mediaKpiTargets.impressions)) }}>
+                          달성률: {calculateAchievementRate(Math.floor(summaryData.thisMonthImpressions * Math.random() * 0.5 + summaryData.thisMonthImpressions * 0.20), mediaKpiTargets.impressions)}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
-                        {formatNumber(summaryData.thisMonthClicks)}회
-                      </div>
-                      <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)) }}>
-                        달성률: {calculateAchievementRate(summaryData.thisMonthClicks, kpiTargets.clicks)}%
+
+                      {/* 클릭수 카드 */}
+                      <div style={{
+                        border: '1px solid #dee2e6',
+                        borderRadius: '10px',
+                        padding: '12px',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px' }}>클릭수</h4>
+                          <span style={{ fontSize: '10px', color: '#6c757d' }}>
+                            목표값: {formatNumber(mediaKpiTargets.clicks)}회
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff', marginBottom: '6px' }}>
+                          {formatNumber(Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18))}회
+                        </div>
+                        <div style={{ fontSize: '11px', color: getAchievementColor(calculateAchievementRate(Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18), mediaKpiTargets.clicks)) }}>
+                          달성률: {calculateAchievementRate(Math.floor(summaryData.thisMonthClicks * Math.random() * 0.5 + summaryData.thisMonthClicks * 0.18), mediaKpiTargets.clicks)}%
+                        </div>
                       </div>
                     </div>
                   </div>

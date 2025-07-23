@@ -36,9 +36,9 @@ const SettingsManagement = () => {
         { id: 2, name: '구글', active: false, key: 'google_key_456' }
       ],
       kpis: [
-        { id: 1, name: '광고비', active: true, period: '기준월', targetValue: '1000000' },
-        { id: 2, name: 'CPC', active: false, period: '기준월', targetValue: '500' },
-        { id: 3, name: '전환수', active: true, period: '기준월', targetValue: '100' }
+        { id: 1, name: '광고비', active: true, period: '기준월', targetValue: '1000000', mediaName: '네이버' },
+        { id: 2, name: 'CPC', active: false, period: '기준월', targetValue: '500', mediaName: '네이버' },
+        { id: 3, name: '전환수', active: true, period: '기준월', targetValue: '100', mediaName: '구글' }
       ]
     },
     {
@@ -48,8 +48,8 @@ const SettingsManagement = () => {
         { id: 1, name: '카카오', active: true, key: 'kakao_key_789' }
       ],
       kpis: [
-        { id: 1, name: 'CPA', active: true, period: '기준월', targetValue: '5000' },
-        { id: 2, name: 'CVR', active: false, period: '기준월', targetValue: '2.5' }
+        { id: 1, name: 'CPA', active: true, period: '기준월', targetValue: '5000', mediaName: '카카오' },
+        { id: 2, name: 'CVR', active: false, period: '기준월', targetValue: '2.5', mediaName: '카카오' }
       ]
     }
   ]);
@@ -62,6 +62,7 @@ const SettingsManagement = () => {
   // KPI 관리 모달 상태
   const [showKpiManagementModal, setShowKpiManagementModal] = useState(false);
   const [currentKpiAdvertiser, setCurrentKpiAdvertiser] = useState(null);
+  const [selectedMediaForKpi, setSelectedMediaForKpi] = useState(''); // 추가: 선택된 매체
   
   // 선택 가능한 매체 목록
   const mediaOptions = ['네이버', '카카오', '구글', '메타', '틱톡'];
@@ -229,16 +230,24 @@ const SettingsManagement = () => {
 
   const handleKpiManagement = (advertiser) => {
     setCurrentKpiAdvertiser(advertiser);
+    
+    // 광고주의 첫 번째 매체를 기본으로 선택
+    const firstMedia = advertiser.medias.find(media => media.name && media.name.trim() !== '');
+    setSelectedMediaForKpi(firstMedia ? firstMedia.name : '');
+    
     setShowKpiManagementModal(true);
   };
 
-  const handleAddKpiToAdvertiser = (advertiserId) => {
+  const handleAddKpiToAdvertiser = (advertiserId, mediaName) => {
+    if (!mediaName) return;
+    
     const newKpi = {
       id: Date.now(),
       name: '',
       active: false,
       period: '기준월',
-      targetValue: ''
+      targetValue: '',
+      mediaName: mediaName // 매체 정보 추가
     };
     
     setAdvertisers(prev => prev.map(advertiser => {
@@ -923,92 +932,136 @@ const SettingsManagement = () => {
       {/* KPI 관리 모달 */}
       {showKpiManagementModal && currentKpiAdvertiser && (
         <div className="modal-overlay">
-          <div className="modal media-management-modal" style={{ width: '800px', maxWidth: '95%', minWidth: '600px' }}>
+          <div className="modal kpi-management-modal" style={{ width: '900px', maxWidth: '95%', minWidth: '700px' }}>
             <h3 style={{ textAlign: 'left' }}>{currentKpiAdvertiser.name} - KPI 관리</h3>
             <div className="modal-content">
-              <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>현재 KPI 상태</h4>
-                {renderKpiBadges(currentKpiAdvertiser.kpis)}
-              </div>
-              <table className="media-management-table">
-                <thead>
-                  <tr>
-                    <th>지표</th>
-                    <th>활성화</th>
-                    <th>기간</th>
-                    <th>목표값</th>
-                    <th>관리</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentKpiAdvertiser.kpis.map(kpi => (
-                    <tr key={kpi.id}>
-                      <td>
-                        <select
-                          value={kpi.name}
-                          onChange={(e) => handleUpdateKpi(kpi.id, 'name', e.target.value)}
-                        >
-                          <option value="">지표 선택</option>
-                          {kpiOptions.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <label className="switch">
-                          <input
-                            type="checkbox"
-                            checked={kpi.active}
-                            onChange={() => handleUpdateKpi(kpi.id, 'active', !kpi.active)}
-                          />
-                          <span className="slider"></span>
-                        </label>
-                      </td>
-                      <td>
-                        <select
-                          value={kpi.period || '기준월'}
-                          onChange={(e) => handleUpdateKpi(kpi.id, 'period', e.target.value)}
-                        >
-                          {periodOptions.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <div className="target-value-container">
-                          <input
-                            type="number"
-                            value={kpi.targetValue || ''}
-                            onChange={(e) => handleUpdateKpi(kpi.id, 'targetValue', e.target.value)}
-                            placeholder="목표값을 입력하세요"
-                            min="0"
-                            step="0.01"
-                          />
-                          {kpi.name && (
-                            <span className="unit-label">{getKpiUnit(kpi.name)}</span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <button 
-                          className="delete-button"
-                          onClick={() => handleDeleteKpiFromAdvertiser(kpi.id)}
-                        >
-                          삭제
-                        </button>
-                      </td>
-                    </tr>
+              {/* 매체별 탭 네비게이션 */}
+              <div className="media-tab-navigation" style={{ marginBottom: '20px', borderBottom: '1px solid #e0e0e0' }}>
+                {currentKpiAdvertiser.medias && currentKpiAdvertiser.medias
+                  .filter(media => media.name && media.name.trim() !== '')
+                  .map(media => (
+                    <button
+                      key={media.id}
+                      className={`media-tab-button ${selectedMediaForKpi === media.name ? 'active' : ''}`}
+                      onClick={() => setSelectedMediaForKpi(media.name)}
+                      style={{
+                        background: selectedMediaForKpi === media.name ? '#007bff' : 'transparent',
+                        color: selectedMediaForKpi === media.name ? 'white' : '#666',
+                        border: 'none',
+                        padding: '12px 24px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: selectedMediaForKpi === media.name ? '600' : '400',
+                        borderBottom: selectedMediaForKpi === media.name ? '2px solid #007bff' : '2px solid transparent',
+                        transition: 'all 0.3s ease',
+                        marginRight: '10px'
+                      }}
+                    >
+                      {media.name}
+                    </button>
                   ))}
-                </tbody>
-              </table>
-              <div className="media-table-actions">
-                <button 
-                  className="add-media-button"
-                  onClick={() => handleAddKpiToAdvertiser(currentKpiAdvertiser.id)}
-                >
-                  + 지표 추가
-                </button>
+                {currentKpiAdvertiser.medias && currentKpiAdvertiser.medias
+                  .filter(media => media.name && media.name.trim() !== '').length === 0 && (
+                  <p style={{ color: '#666', padding: '20px', textAlign: 'center' }}>
+                    매체를 먼저 등록해주세요.
+                  </p>
+                )}
               </div>
+
+              {/* 선택된 매체가 있을 때만 KPI 관리 테이블 표시 */}
+              {selectedMediaForKpi && (
+                <>
+                  <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>
+                      {selectedMediaForKpi} - 현재 KPI 상태
+                    </h4>
+                    {renderKpiBadges(
+                      currentKpiAdvertiser.kpis.filter(kpi => kpi.mediaName === selectedMediaForKpi)
+                    )}
+                  </div>
+                  <table className="media-management-table">
+                    <thead>
+                      <tr>
+                        <th>지표</th>
+                        <th>활성화</th>
+                        <th>기간</th>
+                        <th>목표값</th>
+                        <th>관리</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentKpiAdvertiser.kpis
+                        .filter(kpi => kpi.mediaName === selectedMediaForKpi)
+                        .map(kpi => (
+                        <tr key={kpi.id}>
+                          <td>
+                            <select
+                              value={kpi.name}
+                              onChange={(e) => handleUpdateKpi(kpi.id, 'name', e.target.value)}
+                            >
+                              <option value="">지표 선택</option>
+                              {kpiOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td>
+                            <label className="switch">
+                              <input
+                                type="checkbox"
+                                checked={kpi.active}
+                                onChange={() => handleUpdateKpi(kpi.id, 'active', !kpi.active)}
+                              />
+                              <span className="slider"></span>
+                            </label>
+                          </td>
+                          <td>
+                            <select
+                              value={kpi.period || '기준월'}
+                              onChange={(e) => handleUpdateKpi(kpi.id, 'period', e.target.value)}
+                            >
+                              {periodOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td>
+                            <div className="target-value-container">
+                              <input
+                                type="number"
+                                value={kpi.targetValue || ''}
+                                onChange={(e) => handleUpdateKpi(kpi.id, 'targetValue', e.target.value)}
+                                placeholder="목표값을 입력하세요"
+                                min="0"
+                                step="0.01"
+                              />
+                              {kpi.name && (
+                                <span className="unit-label">{getKpiUnit(kpi.name)}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <button 
+                              className="delete-button"
+                              onClick={() => handleDeleteKpiFromAdvertiser(kpi.id)}
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="media-table-actions">
+                    <button 
+                      className="add-media-button"
+                      onClick={() => handleAddKpiToAdvertiser(currentKpiAdvertiser.id, selectedMediaForKpi)}
+                    >
+                      + 지표 추가
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
             <div className="modal-actions">
               <button 
@@ -1016,6 +1069,7 @@ const SettingsManagement = () => {
                 onClick={() => {
                   setShowKpiManagementModal(false);
                   setCurrentKpiAdvertiser(null);
+                  setSelectedMediaForKpi(''); // 모달 닫을 때 선택된 매체 초기화
                 }}
               >
                 닫기
